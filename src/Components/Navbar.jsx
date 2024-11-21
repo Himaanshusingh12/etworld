@@ -16,7 +16,7 @@ function Navbar() {
     <>
       {/* Navbar Start */}
       <nav className="navbar navbar-expand-lg bg-white navbar-light shadow border-top border-5 border-primary sticky-top p-0">
-        <div className="navbar-brand bg-primary d-flex align-items-center px-4 px-lg-5">
+        <div className="navbar-brand  d-flex align-items-center px-4 px-lg-5">
           <img
             src="img/ET logo.png"
             alt="Et World Logo"
