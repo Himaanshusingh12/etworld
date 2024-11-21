@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 function Footer() {
   return (
@@ -67,12 +67,12 @@ function Footer() {
               <a className="btn btn-link" href>
                 Contact Us
               </a>
-              <a className="btn btn-link" href>
-                Our Services
-              </a>
-              <a className="btn btn-link" href>
+              <NavLink className="btn btn-link" to="/privacy-policy">
+                Privacy &amp; Policy
+              </NavLink>
+              <NavLink className="btn btn-link" to="/terms-condition">
                 Terms &amp; Condition
-              </a>
+              </NavLink>
               <a className="btn btn-link" href>
                 Support
               </a>

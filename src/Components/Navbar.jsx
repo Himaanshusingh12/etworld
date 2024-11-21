@@ -4,6 +4,9 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 function Navbar() {
   const navigate = useNavigate();
 
+  // Check if user is logged in
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const handleLogout = () => {
     localStorage.removeItem("user");
 
@@ -13,12 +16,13 @@ function Navbar() {
     <>
       {/* Navbar Start */}
       <nav className="navbar navbar-expand-lg bg-white navbar-light shadow border-top border-5 border-primary sticky-top p-0">
-        <a
-          href="index.html"
-          className="navbar-brand bg-primary d-flex align-items-center px-4 px-lg-5"
-        >
-          <h2 className="mb-2 text-white">Et World</h2>
-        </a>
+        <div className="navbar-brand bg-primary d-flex align-items-center px-4 px-lg-5">
+          <img
+            src="img/ET logo.png"
+            alt="Et World Logo"
+            style={{ height: "100%" }}
+          />
+        </div>
         <button
           type="button"
           className="navbar-toggler me-4"
@@ -35,9 +39,13 @@ function Navbar() {
             <NavLink to="/about" className="nav-item nav-link">
               About
             </NavLink>
-            <NavLink to="/services" className="nav-item nav-link">
+            {/* <NavLink to="/services" className="nav-item nav-link">
               Services
+            </NavLink> */}
+            <NavLink to="/loan-calculator" className="nav-item nav-link">
+              Loan Calculator
             </NavLink>
+
             {/* Dropdown Menu */}
             <div className="nav-item dropdown">
               <a
@@ -48,67 +56,57 @@ function Navbar() {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                Pages
+                Services
               </a>
               <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
-                  <NavLink to="/profile" className="dropdown-item">
-                    <i className="fas fa-user-circle mr-2" /> Profile
+                  <NavLink to="/logistic" className="dropdown-item">
+                    <i className="fas fa-truck mr-2" /> Logistic
                   </NavLink>
                 </li>
 
-                <li>
-                  <NavLink to="/change-password" className="dropdown-item">
-                    <i className="fas fa-key mr-2" /> Change Password
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink to="/loan-calculator" className="dropdown-item">
-                    <i className="fas fa-calculator mr-2" /> Loan Calculator
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink to="/terms-condition" className="dropdown-item">
-                    <i className="fas fa-file-alt mr-2" /> Terms & Condition
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/privacy-policy" className="dropdown-item">
-                    <i className="fas fa-lock mr-2" /> Privacy & Policy
-                  </NavLink>
-                </li>
                 <li>
                   <hr className="dropdown-divider" />
-                </li>
-                <li>
-                  <NavLink
-                    to="/login"
-                    onClick={handleLogout}
-                    className="dropdown-item"
-                  >
-                    <i className="fas fa-sign-out-alt mr-2" /> Logout
-                  </NavLink>
                 </li>
               </ul>
             </div>
 
             <div className="d-flex align-items-center">
-              <Link
-                to="/login"
-                className="btn btn-outline-primary me-2"
-                style={{ height: "auto", lineHeight: "normal" }}
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="btn btn-outline-primary me-2"
-                style={{ height: "auto", lineHeight: "normal" }}
-              >
-                Signup
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    to="/profile"
+                    className="btn btn-outline-primary me-2"
+                    style={{ height: "auto", lineHeight: "normal" }}
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    className="btn btn-outline-primary me-2"
+                    style={{ height: "auto", lineHeight: "normal" }}
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="btn btn-outline-primary me-2"
+                    style={{ height: "auto", lineHeight: "normal" }}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="btn btn-outline-primary me-2"
+                    style={{ height: "auto", lineHeight: "normal" }}
+                  >
+                    Signup
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
