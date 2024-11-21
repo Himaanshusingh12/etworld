@@ -84,7 +84,7 @@ function Navbar() {
                 </li>
                 <li>
                   <NavLink
-                    to="/"
+                    to="/login"
                     onClick={handleLogout}
                     className="dropdown-item"
                   >
