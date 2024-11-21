@@ -13,6 +13,7 @@ function Login() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -60,6 +61,10 @@ function Login() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -125,14 +130,15 @@ function Login() {
                       required
                     />
                   </div>
-                  <div className="mb-3">
+                  <div className="mb-3" style={{ position: "relative" }}>
                     <input
                       style={{
                         border: "none",
                         borderBottom: "1px solid black",
                         textDecoration: "none",
                       }}
-                      type="password"
+                      // type="text"
+                      type={showPassword ? "text" : "password"}
                       value={credintials.password}
                       onChange={handleChange}
                       className="form-control"
@@ -141,6 +147,26 @@ function Login() {
                       name="password"
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="btn btn-link"
+                      style={{
+                        position: "absolute",
+                        right: "20px",
+                        top: "2px",
+                        fontSize: "16px",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {showPassword ? (
+                        <i className="fas fa-eye-slash"></i> // Font Awesome icon for hide
+                      ) : (
+                        <i className="fas fa-eye"></i> // Font Awesome icon for show
+                      )}
+                    </button>
                   </div>
                   {error && <p className="text-danger">{error}</p>}
                   <div className="d-flex justify-content-between mb-3">
