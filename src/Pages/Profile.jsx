@@ -82,7 +82,7 @@ function Profile() {
 
       if (response.data.response === "1") {
         setMessage("Password updated successfully!");
-        navigate("/profile");
+        navigate("/");
       } else {
         setMessage("Failed to update password: " + response.data.message);
       }
