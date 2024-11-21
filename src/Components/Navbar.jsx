@@ -2,6 +2,13 @@ import React from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+
+    navigate("/login");
+  };
   return (
     <>
       {/* Navbar Start */}
@@ -46,35 +53,42 @@ function Navbar() {
               <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
                   <NavLink to="/profile" className="dropdown-item">
-                    Profile
+                    <i className="fas fa-user-circle mr-2" /> Profile
                   </NavLink>
                 </li>
+
                 <li>
                   <NavLink to="/change-password" className="dropdown-item">
-                    Change Password
+                    <i className="fas fa-key mr-2" /> Change Password
                   </NavLink>
                 </li>
+
                 <li>
                   <NavLink to="/loan-calculator" className="dropdown-item">
-                    Loan Calculator
+                    <i className="fas fa-calculator mr-2" /> Loan Calculator
                   </NavLink>
                 </li>
+
                 <li>
                   <NavLink to="/terms-condition" className="dropdown-item">
-                    Terms & Condition
+                    <i className="fas fa-file-alt mr-2" /> Terms & Condition
                   </NavLink>
                 </li>
                 <li>
                   <NavLink to="/privacy-policy" className="dropdown-item">
-                    Privacy & Policy
+                    <i className="fas fa-lock mr-2" /> Privacy & Policy
                   </NavLink>
                 </li>
                 <li>
                   <hr className="dropdown-divider" />
                 </li>
                 <li>
-                  <NavLink to="/logout" className="dropdown-item">
-                    Logout
+                  <NavLink
+                    to="/"
+                    onClick={handleLogout}
+                    className="dropdown-item"
+                  >
+                    <i className="fas fa-sign-out-alt mr-2" /> Logout
                   </NavLink>
                 </li>
               </ul>
