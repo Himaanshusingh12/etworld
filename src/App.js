@@ -1,18 +1,20 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
-import Services from "./Pages/Services";
+// import Services from "./Pages/Logistic";
 import Login from "./Pages/Login";
 import SignUp from "./Pages/SignUp";
 import Feedback from "./Pages/Feedback";
 import LoanCalculator from "./Pages/LoanCalculator";
 import VeryfyEmail from "./Pages/VeryfyEmail";
 import VerifyyOtp from "./Pages/VerifyOtp";
-import ChangePassword from "./Pages/ChangePassword";
 import Profile from "./Pages/Profile";
 import PrivacyPolicy from "./Pages/PrivacyPolicy";
 import TermsCondition from "./Pages/TermsCondition";
 import PNF from "./Pages/PNF";
+import ForgetPassword from "./Pages/ForgetPassword";
+import ChangePassword from "./Pages/ChangePassword";
+import Logistic from "./Pages/Logistic";
 
 function App() {
   return (
@@ -20,14 +22,15 @@ function App() {
       {/* <Navbar /> */}
       {/* <Home /> */}
       {/* <About /> */}
+      {/* <Logistic /> */}
       {/* <Footer /> */}
-      {/* <Services/> */}
       {/* <Login /> */}
       {/* <SignUp /> */}
       {/* <Feedback/> */}
       {/* <LoanCalculator/> */}
       {/* <VeryfyEmail /> */}
       {/* <VeryfyOtp /> */}
+      {/* <ForgetPassword /> */}
       {/* <ChangePassword /> */}
       {/* <Profile /> */}
       {/* <PrivacyPolicy /> */}
@@ -38,10 +41,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/about" element={<About />}></Route>
-          <Route path="/services" element={<Services />}></Route>
+          <Route path="/logistic" element={<Logistic />}></Route>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/signup" element={<SignUp />}></Route>
           <Route path="/change-password" element={<ChangePassword />}></Route>
+          <Route path="/forget-password" element={<ForgetPassword />}></Route>
           <Route path="/feedback" element={<Feedback />}></Route>
           <Route path="/loan-calculator" element={<LoanCalculator />}></Route>
           <Route path="/veryfy-email" element={<VeryfyEmail />}></Route>
