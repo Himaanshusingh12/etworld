@@ -22,13 +22,17 @@ function VeryfyEmail() {
       );
 
       if (response.data.response === "1") {
+        // console.log(response);
+        // Store only userId in localStorage
+        const userId = response.data.userid;
+        localStorage.setItem("userId", userId);
         // Store OTP in localStorage
         localStorage.setItem("otp", response.data.OTP);
-        // navigate("/verify-otp", { state: { email: email } });
         navigate("/verify-otp");
       } else {
         console.log("Failed to send OTP:", response.data.message);
-        setMessage("Error: " + response.data.message);
+        // setMessage("Error: " + response.data.message);
+        setMessage(response.data.message);
       }
     } catch (error) {
       setMessage("Error sending OTP. Please try again later.");

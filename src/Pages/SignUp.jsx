@@ -18,6 +18,8 @@ function SignUp() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -29,7 +31,24 @@ function SignUp() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Passwords and Confirm password do not match.");
+      return;
+    }
+
+    //phone number validation
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(formData.mobile)) {
+      setError("Phone number must be exactly 10 digits.");
+      return;
+    }
+
+    // Password validation
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-={}|[\]\\:";'<>?,./]).{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      setError(
+        "password must be at 8 character long, contain at least one uppercase letter, one lowercase letter, and one special character."
+      );
       return;
     }
 
@@ -85,6 +104,14 @@ function SignUp() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (
@@ -201,14 +228,14 @@ function SignUp() {
                       required
                     />
                   </div>
-                  <div className="mb-3">
+                  <div className="mb-3" style={{ position: "relative" }}>
                     <input
                       style={{
                         border: "none",
                         borderBottom: "1px solid black",
                         textDecoration: "none",
                       }}
-                      type="Password"
+                      type={showPassword ? "text" : "password"}
                       value={formData.password}
                       onChange={handleInputChange}
                       className="form-control"
@@ -217,15 +244,35 @@ function SignUp() {
                       name="password"
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="btn btn-link"
+                      style={{
+                        position: "absolute",
+                        right: "20px",
+                        top: "2px",
+                        fontSize: "16px",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {showPassword ? (
+                        <i className="fas fa-eye-slash"></i>
+                      ) : (
+                        <i className="fas fa-eye"></i>
+                      )}
+                    </button>
                   </div>
-                  <div className="mb-3">
+                  <div className="mb-3" style={{ position: "relative" }}>
                     <input
                       style={{
                         border: "none",
                         borderBottom: "1px solid black",
                         textDecoration: "none",
                       }}
-                      type="Password"
+                      type={showConfirmPassword ? "text" : "password"}
                       className="form-control"
                       id="confirmPassword"
                       value={formData.confirmPassword}
@@ -234,6 +281,26 @@ function SignUp() {
                       name="confirmPassword"
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={toggleConfirmPasswordVisibility}
+                      className="btn btn-link"
+                      style={{
+                        position: "absolute",
+                        right: "20px",
+                        top: "2px",
+                        fontSize: "16px",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {showConfirmPassword ? (
+                        <i className="fas fa-eye-slash"></i>
+                      ) : (
+                        <i className="fas fa-eye"></i>
+                      )}
+                    </button>
                   </div>
                   <div className="mb-3">
                     <input
