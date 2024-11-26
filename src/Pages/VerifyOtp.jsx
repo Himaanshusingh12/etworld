@@ -15,10 +15,10 @@ function VeryfyOtp() {
     // Check if entered OTP matches the stored OTP
     if (otp === storedOtp) {
       setMessage("OTP verified successfully.");
-      console.log("OTP verified successfully, navigating to change-password");
+      console.log("OTP verified successfully, navigating to forget-password");
 
       // Redirect to the change-password page
-      navigate("/change-password");
+      navigate("/forget-password");
     } else {
       console.log("Failed to verify OTP: OTP does not match");
       setMessage("Error: OTP does not match. Please try again.");

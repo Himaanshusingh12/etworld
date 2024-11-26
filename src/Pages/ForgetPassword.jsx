@@ -7,11 +7,13 @@ import axios from "axios";
 function ForgetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const userData = JSON.parse(localStorage.getItem("user"));
-  const userId = userData ? userData.userid : null;
+  // Retrieve userId from local storage
+  const userId = localStorage.getItem("userId");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +26,17 @@ function ForgetPassword() {
     // Check if passwords match
     if (password !== confirmPassword) {
       setMessage("Passwords do not match. Please try again.");
+      return;
+    }
+
+    // Password validation using regex
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-={}|[\]\\:";'<>?,./]).{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      setMessage(
+        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+      );
       return;
     }
 
@@ -52,6 +65,14 @@ function ForgetPassword() {
       setMessage("Error updating password. Please try again later.");
     }
   };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
   return (
     <>
       <Navbar />
@@ -65,14 +86,14 @@ function ForgetPassword() {
                   Reset Your Password
                 </h4>
                 <form className="was-validated" onSubmit={handleSubmit}>
-                  <div className="mb-3 mt-3">
+                  <div className="mb-3 mt-3" style={{ position: "relative" }}>
                     <input
                       style={{
                         border: "none",
                         borderBottom: "1px solid black",
                         textDecoration: "none",
                       }}
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       className="form-control"
                       id="password"
                       placeholder="Password"
@@ -81,16 +102,36 @@ function ForgetPassword() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="btn btn-link"
+                      style={{
+                        position: "absolute",
+                        right: "20px",
+                        top: "2px",
+                        fontSize: "16px",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {showPassword ? (
+                        <i className="fas fa-eye-slash"></i>
+                      ) : (
+                        <i className="fas fa-eye"></i>
+                      )}
+                    </button>
                   </div>
 
-                  <div className="mb-3">
+                  <div className="mb-3" style={{ position: "relative" }}>
                     <input
                       style={{
                         border: "none",
                         borderBottom: "1px solid black",
                         textDecoration: "none",
                       }}
-                      type="Password"
+                      type={showConfirmPassword ? "text" : "password"}
                       className="form-control"
                       id="ConfirmPassword"
                       placeholder="Confirm Password"
@@ -99,6 +140,26 @@ function ForgetPassword() {
                       name="ConfirmPassword"
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={toggleConfirmPasswordVisibility}
+                      className="btn btn-link"
+                      style={{
+                        position: "absolute",
+                        right: "20px",
+                        top: "2px",
+                        fontSize: "16px",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {showConfirmPassword ? (
+                        <i className="fas fa-eye-slash"></i>
+                      ) : (
+                        <i className="fas fa-eye"></i>
+                      )}
+                    </button>
                   </div>
 
                   <button

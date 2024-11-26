@@ -12,6 +12,12 @@ function Profile() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
 
+  const [activeButton, setActiveButton] = useState("profile");
+  // State to manage password visibility
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,7 +26,6 @@ function Profile() {
     const userId = user ? user.userid : null;
 
     if (userId) {
-      // Fetch profile data
       axios
         .post(
           "https://nodesolution.in/etworld/user_profile.php",
@@ -40,10 +45,12 @@ function Profile() {
   // Handle the toggle for displaying the Change Password form
   const handleChangePasswordClick = () => {
     setShowChangePassword(true);
+    setActiveButton("changePassword");
   };
 
   const handleProfileClick = () => {
     setShowChangePassword(false);
+    setActiveButton("profile");
   };
 
   //Logout function with navigate
@@ -91,6 +98,18 @@ function Profile() {
     }
   };
 
+  // for password hide show
+  const toggleOldPasswordVisibility = () => {
+    setShowOldPassword(!showOldPassword);
+  };
+  const togglePasswordVisibility = () => {
+    setShowNewPassword(!showNewPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
     <>
       <Navbar />
@@ -100,20 +119,27 @@ function Profile() {
           <div className="col-md-4 d-flex">
             <div className="card shadow h-100 w-100">
               <div className="list-group">
+                <h5 className="list-group-item text-center">Manage Profile</h5>
                 <button
-                  className="list-group-item list-group-item-action active"
+                  className={`list-group-item list-group-item-action ${
+                    activeButton === "profile" ? "active bg-primary" : ""
+                  }`}
                   onClick={handleProfileClick}
                 >
                   Profile
                 </button>
                 <button
-                  className="list-group-item list-group-item-action"
+                  className={`list-group-item list-group-item-action ${
+                    activeButton === "changePassword" ? "active bg-primary" : ""
+                  }`}
                   onClick={handleChangePasswordClick}
                 >
                   Change Password
                 </button>
                 <button
-                  className="list-group-item list-group-item-action text-danger"
+                  className={`list-group-item list-group-item-action text-danger ${
+                    activeButton === "logout" ? "active bg-primary" : ""
+                  }`}
                   onClick={handleLogout}
                 >
                   Logout
@@ -134,16 +160,20 @@ function Profile() {
                 {showChangePassword ? (
                   <div>
                     <form className="was-validated" onSubmit={handleSubmit}>
-                      <div className="mb-3 mt-3">
+                      <div
+                        className="mb-3 mt-3"
+                        style={{ position: "relative" }}
+                      >
                         <input
                           style={{
                             border: "none",
                             borderBottom: "1px solid black",
                             textDecoration: "none",
                             width: "50%",
-                            marginLeft: "150px",
+                            // marginLeft: "150px",
+                            marginLeft: "100px",
                           }}
-                          type="password"
+                          type={showOldPassword ? "text" : "password"}
                           className="form-control"
                           id="oldPassword"
                           placeholder="Old Password"
@@ -152,18 +182,38 @@ function Profile() {
                           onChange={(e) => setOldPassword(e.target.value)}
                           required
                         />
+                        <button
+                          type="button"
+                          onClick={toggleOldPasswordVisibility}
+                          className="btn btn-link"
+                          style={{
+                            position: "absolute",
+                            right: "280px",
+                            top: "2px",
+                            fontSize: "16px",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {showOldPassword ? (
+                            <i className="fas fa-eye-slash"></i>
+                          ) : (
+                            <i className="fas fa-eye"></i>
+                          )}
+                        </button>
                       </div>
 
-                      <div className="mb-3">
+                      <div className="mb-3" style={{ position: "relative" }}>
                         <input
                           style={{
                             border: "none",
                             borderBottom: "1px solid black",
                             textDecoration: "none",
                             width: "50%",
-                            marginLeft: "150px",
+                            marginLeft: "100px",
                           }}
-                          type="password"
+                          type={showNewPassword ? "text" : "password"}
                           className="form-control"
                           id="newPassword"
                           placeholder="New Password"
@@ -172,18 +222,38 @@ function Profile() {
                           onChange={(e) => setPassword(e.target.value)}
                           required
                         />
+                        <button
+                          type="button"
+                          onClick={togglePasswordVisibility}
+                          className="btn btn-link"
+                          style={{
+                            position: "absolute",
+                            right: "280px",
+                            top: "2px",
+                            fontSize: "16px",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {showNewPassword ? (
+                            <i className="fas fa-eye-slash"></i>
+                          ) : (
+                            <i className="fas fa-eye"></i>
+                          )}
+                        </button>
                       </div>
 
-                      <div className="mb-3">
+                      <div className="mb-3" style={{ position: "relative" }}>
                         <input
                           style={{
                             border: "none",
                             borderBottom: "1px solid black",
                             textDecoration: "none",
-                            width: "50%",
-                            marginLeft: "150px",
+                            width: "55%",
+                            marginLeft: "100px",
                           }}
-                          type="password"
+                          type={showConfirmPassword ? "text" : "password"}
                           className="form-control"
                           id="confirmPassword"
                           placeholder="Confirm Password"
@@ -192,12 +262,32 @@ function Profile() {
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           required
                         />
+                        <button
+                          type="button"
+                          onClick={toggleConfirmPasswordVisibility}
+                          className="btn btn-link"
+                          style={{
+                            position: "absolute",
+                            right: "280px",
+                            top: "2px",
+                            fontSize: "16px",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {showConfirmPassword ? (
+                            <i className="fas fa-eye-slash"></i>
+                          ) : (
+                            <i className="fas fa-eye"></i>
+                          )}
+                        </button>
                       </div>
 
                       <button
                         type="submit"
                         className="btn btn-primary w-50"
-                        style={{ borderRadius: "15px", marginLeft: "150px" }}
+                        style={{ borderRadius: "15px", marginLeft: "100px" }}
                       >
                         Change Password
                       </button>

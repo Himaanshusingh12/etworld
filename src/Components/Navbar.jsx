@@ -17,11 +17,17 @@ function Navbar() {
       {/* Navbar Start */}
       <nav className="navbar navbar-expand-lg bg-white navbar-light shadow border-top border-5 border-primary sticky-top p-0">
         <div className="navbar-brand d-flex align-items-center px-4 px-lg-5">
-          <img
-            src="img/ET logo.png"
-            alt="Et World Logo"
-            style={{ height: "100%" }}
-          />
+          <NavLink
+            to="/"
+            className="d-flex align-items-center"
+            style={{ height: "auto" }}
+          >
+            <img
+              src="img/ET logo.png"
+              alt="Et World Logo"
+              style={{ height: "50px", width: "auto" }}
+            />
+          </NavLink>
         </div>
         <button
           type="button"
@@ -39,13 +45,6 @@ function Navbar() {
             <NavLink to="/about" className="nav-item nav-link">
               About
             </NavLink>
-            {/* <NavLink to="/services" className="nav-item nav-link">
-              Services
-            </NavLink> */}
-            <NavLink to="/loan-calculator" className="nav-item nav-link">
-              Loan Calculator
-            </NavLink>
-
             {/* Dropdown Menu */}
             <div className="nav-item dropdown">
               <a
@@ -70,6 +69,9 @@ function Navbar() {
                 </li>
               </ul>
             </div>
+            <NavLink to="/loan-calculator" className="nav-item nav-link">
+              Loan Calculator
+            </NavLink>
 
             <div className="d-flex align-items-center">
               {user ? (

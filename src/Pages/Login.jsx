@@ -162,9 +162,9 @@ function Login() {
                       }}
                     >
                       {showPassword ? (
-                        <i className="fas fa-eye-slash"></i> // Font Awesome icon for hide
+                        <i className="fas fa-eye-slash"></i>
                       ) : (
-                        <i className="fas fa-eye"></i> // Font Awesome icon for show
+                        <i className="fas fa-eye"></i>
                       )}
                     </button>
                   </div>

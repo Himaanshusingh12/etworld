@@ -13,7 +13,6 @@ import PrivacyPolicy from "./Pages/PrivacyPolicy";
 import TermsCondition from "./Pages/TermsCondition";
 import PNF from "./Pages/PNF";
 import ForgetPassword from "./Pages/ForgetPassword";
-import ChangePassword from "./Pages/ChangePassword";
 import Logistic from "./Pages/Logistic";
 
 function App() {
@@ -44,7 +43,6 @@ function App() {
           <Route path="/logistic" element={<Logistic />}></Route>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/signup" element={<SignUp />}></Route>
-          <Route path="/change-password" element={<ChangePassword />}></Route>
           <Route path="/forget-password" element={<ForgetPassword />}></Route>
           <Route path="/feedback" element={<Feedback />}></Route>
           <Route path="/loan-calculator" element={<LoanCalculator />}></Route>

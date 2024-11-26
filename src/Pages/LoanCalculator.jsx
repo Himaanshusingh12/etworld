@@ -74,11 +74,19 @@ function LoanCalculator() {
       // Generate installments data
       const generatedInstallments = [];
       let currentDate = new Date(startDate);
+      let remainingBalance = principal;
 
       for (let i = 0; i < numberOfPayments; i++) {
-        const installmentDate = new Date(currentDate);
-        // Adjust date based on payment frequency
+        const interestForInstallment = remainingBalance * adjustedInterestRate; // Interest based on remaining balance
+        const principalForInstallment = monthly - interestForInstallment; // Principal is the remaining part of monthly payment
+        remainingBalance -= principalForInstallment; // Reduce the balance by the principal paid
 
+        // Prevent floating-point issues by ensuring the balance never goes negative
+        if (remainingBalance < 0) remainingBalance = 0;
+
+        const installmentDate = new Date(currentDate);
+
+        // Adjust date based on payment frequency
         switch (paymentFrequency) {
           case "Monthly":
             installmentDate.setMonth(installmentDate.getMonth() + 1);
@@ -109,24 +117,11 @@ function LoanCalculator() {
         generatedInstallments.push({
           installmentDate: installmentDate.toLocaleDateString(),
           installmentAmount: monthly.toFixed(2),
-          principalAmount: (
-            monthly *
-            (adjustedInterestRate /
-              (1 - Math.pow(1 + adjustedInterestRate, -numberOfPayments)))
-          ).toFixed(2),
-          interest: (
-            monthly -
-            monthly *
-              (adjustedInterestRate /
-                (1 - Math.pow(1 + adjustedInterestRate, -numberOfPayments)))
-          ).toFixed(2),
-          balance: (
-            principal -
-            (i + 1) *
-              (monthly *
-                (adjustedInterestRate /
-                  (1 - Math.pow(1 + adjustedInterestRate, -numberOfPayments))))
-          ).toFixed(2),
+          // principalAmount: principalForInstallment.toFixed(2),
+          principalAmount: Math.max(principalForInstallment, 0).toFixed(2), // Changed line
+          interest: interestForInstallment.toFixed(2),
+          // balance: remainingBalance.toFixed(2),
+          balance: Math.max(remainingBalance, 0).toFixed(2), // Changed line
         });
 
         currentDate = installmentDate; // Update current date for the next installment
@@ -183,6 +178,244 @@ function LoanCalculator() {
                   }}
                 >
                   <div className="mb-3">
+                    <input
+                      style={{
+                        border: "none",
+                        borderBottom: "1px solid black",
+                        textDecoration: "none",
+                        padding: "10px 0",
+                        width: "100%",
+                      }}
+                      type="number"
+                      className="form-control"
+                      value={loanAmount}
+                      onChange={(e) => setLoanAmount(e.target.value)}
+                      placeholder="Loan Amount"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <input
+                      style={{
+                        border: "none",
+                        borderBottom: "1px solid black",
+                        textDecoration: "none",
+                        padding: "10px 0",
+                        width: "100%",
+                      }}
+                      type="number"
+                      className="form-control"
+                      value={interestRate}
+                      onChange={(e) => setInterestRate(e.target.value)}
+                      placeholder="Interest Rate(%)"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <h6>Loan Terms In (Months/Year)</h6>
+                    <label>
+                      <input
+                        type="radio"
+                        value="months"
+                        checked={termType === "months"}
+                        onChange={() => setTermType("months")}
+                      />
+                      Months
+                    </label>
+                    <label className="ms-2">
+                      <input
+                        type="radio"
+                        value="years"
+                        checked={termType === "years"}
+                        onChange={() => setTermType("years")}
+                      />
+                      Years
+                    </label>
+                    <input
+                      style={{
+                        border: "none",
+                        borderBottom: "1px solid black",
+                        textDecoration: "none",
+                        padding: "10px 0",
+                        width: "100%",
+                      }}
+                      type="number"
+                      className="form-control"
+                      value={term}
+                      onChange={(e) => setTerm(e.target.value)}
+                      placeholder="Enter term"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label style={{ display: "block", marginBottom: "5px" }}>
+                      Payment Frequency:
+                    </label>
+                    <select
+                      style={{
+                        border: "none",
+                        borderBottom: "1px solid black",
+                        textDecoration: "none",
+                        padding: "10px 0",
+                        width: "100%",
+                        background: "transparent",
+                        appearance: "none",
+                      }}
+                      className="form-select"
+                      value={paymentFrequency}
+                      onChange={(e) => setPaymentFrequency(e.target.value)}
+                    >
+                      <option value="Monthly">Monthly</option>
+                      <option value="Bi-weekly">Bi-weekly</option>
+                      <option value="Weekly">Weekly</option>
+                      <option value="Semi-Annually">Semi-Annually</option>
+                      <option value="Quarterly">Quarterly</option>
+                      <option value="Semi-monthly">Semi-monthly</option>
+                      <option value="Daily">Daily</option>
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <input
+                      style={{
+                        border: "none",
+                        borderBottom: "1px solid black",
+                        textDecoration: "none",
+                        padding: "10px 0",
+                        width: "100%",
+                      }}
+                      placeholder="Start Date"
+                      type="date"
+                      className="form-control"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <input
+                      style={{
+                        border: "none",
+                        borderBottom: "1px solid black",
+                        textDecoration: "none",
+                        padding: "10px 0",
+                        width: "100%",
+                      }}
+                      type="number"
+                      className="form-control"
+                      value={downPayment}
+                      onChange={(e) => setDownPayment(e.target.value)}
+                      placeholder="Down Payment (optional)"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-100"
+                      style={{ borderRadius: "15px" }}
+                    >
+                      Calculate
+                    </button>
+                  </div>
+                </form>
+                {monthlyPayment && (
+                  <div>
+                    <h3>Results:</h3>
+                    <p>
+                      Payment Every {paymentFrequency}: {monthlyPayment}
+                    </p>
+
+                    <p>Total Payment: {totalPayment}</p>
+                    <p>Total Interest: {totalInterest}</p>
+
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <h5>Loan Statement</h5>
+
+                      <button
+                        className="btn btn-primary"
+                        style={{ borderRadius: "15px" }}
+                        onClick={downloadPDF}
+                      >
+                        Download Statement
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <div className="table-responsive">
+                  <table className="table table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col">Installment Date</th>
+                        <th scope="col">Installment Amount</th>
+                        <th scope="col">Principal Amount</th>
+                        <th scope="col">Interest</th>
+                        <th scope="col">Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {installments.map((installment, index) => (
+                        <tr key={index}>
+                          <td>{installment.installmentDate}</td>
+                          <td>{installment.installmentAmount}</td>
+                          <td>{installment.principalAmount}</td>
+                          <td>{installment.interest}</td>
+                          <td>{installment.balance}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* from here */}
+      {/* <div className="container">
+        <div
+          style={{
+            display: "flex",
+            height: "120vh",
+          }}
+          className="mt-5 d-flex align-items-stretch"
+        >
+          <div className="col-lg-6 col-md-8 p-0">
+            <div
+              style={{
+                flex: 1,
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img
+                src="img/calculator.jpg"
+                alt="Decorative"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            </div>
+          </div>
+          <div className="col-lg-6 col-md-8 d-flex align-items-center">
+            <div
+              className="card shadow w-100"
+              style={{
+                flex: 1,
+                display: "flex",
+                justifyContent: "center",
+                padding: "40px 80px",
+              }}
+            >
+              <div className="card-body p-0">
+                <h4 className="card-title text-center mb-4">Loan Calculator</h4>
+                <form
+                  novalidate
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    calculateLoan();
+                  }}
+                >
+                  <div className="mb-3 mt-3">
                     <input
                       style={{
                         border: "none",
@@ -369,7 +602,7 @@ function LoanCalculator() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <Footer />
     </>
