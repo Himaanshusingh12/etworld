@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../Components/Navbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Navbar2 from "../Components/Navbar2";
 
 function Login() {
   const [credintials, setCredentials] = useState({
@@ -49,7 +50,9 @@ function Login() {
       if (response.data.response === "1") {
         // Successful login
         localStorage.setItem("user", JSON.stringify(response.data));
-        navigate("/");
+        console.log("Login successful:", response.data);
+        console.log("Login successful, navigating to home...");
+        navigate("/home");
       } else if (response.data.response === "0") {
         setError("Invalid Unique ID or password");
       } else {
@@ -69,7 +72,8 @@ function Login() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
+      <Navbar2 />
       <Header title="Login" secondtitle="Login" />
       <div className="container">
         <div
@@ -162,9 +166,9 @@ function Login() {
                       }}
                     >
                       {showPassword ? (
-                        <i className="fas fa-eye-slash"></i>
-                      ) : (
                         <i className="fas fa-eye"></i>
+                      ) : (
+                        <i className="fas fa-eye-slash"></i>
                       )}
                     </button>
                   </div>
@@ -211,8 +215,7 @@ function Login() {
           </div>
         </div>
       </div>
-
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

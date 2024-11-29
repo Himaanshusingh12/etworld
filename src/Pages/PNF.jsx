@@ -3,11 +3,13 @@ import Header from "../Components/Header";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import { Link } from "react-router-dom";
+import Navbar2 from "../Components/Navbar2";
 
 function PNF() {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
+      <Navbar2 />
       {/* <Header title="Not Found" secondtitle="404" /> */}
       {/* 404 Start */}
       <div className="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
@@ -21,7 +23,10 @@ function PNF() {
                 We’re sorry, the page you have looked for does not exist in our
                 website! Maybe go to our home page or try to use a search?
               </p>
-              <Link className="btn btn-primary rounded-pill py-3 px-5" to="/">
+              <Link
+                className="btn btn-primary rounded-pill py-3 px-5"
+                to="/home"
+              >
                 Go Back To Home
               </Link>
             </div>

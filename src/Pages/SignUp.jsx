@@ -4,6 +4,7 @@ import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Navbar2 from "../Components/Navbar2";
 
 function SignUp() {
   const [formData, setFormData] = useState({
@@ -116,7 +117,8 @@ function SignUp() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
+      <Navbar2 />
       <Header title="Signup" secondtitle="signup" />
       <div className="container">
         <div
@@ -259,9 +261,9 @@ function SignUp() {
                       }}
                     >
                       {showPassword ? (
-                        <i className="fas fa-eye-slash"></i>
-                      ) : (
                         <i className="fas fa-eye"></i>
+                      ) : (
+                        <i className="fas fa-eye-slash"></i>
                       )}
                     </button>
                   </div>
@@ -296,9 +298,9 @@ function SignUp() {
                       }}
                     >
                       {showConfirmPassword ? (
-                        <i className="fas fa-eye-slash"></i>
-                      ) : (
                         <i className="fas fa-eye"></i>
+                      ) : (
+                        <i className="fas fa-eye-slash"></i>
                       )}
                     </button>
                   </div>
@@ -345,7 +347,7 @@ function SignUp() {
                 <hr className="my-4" />
                 <div className="text-center">
                   <p className="mb-0">
-                    Already have an account? <Link to="/login">LOGIN</Link>
+                    Already have an account? <Link to="/">LOGIN</Link>
                   </p>
                 </div>
               </div>
