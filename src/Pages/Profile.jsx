@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 function Profile() {
   const [profileData, setProfileData] = useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
-  const [showEditProfile, setShowEditProfile] = useState(false); //this
+  const [showEditProfile, setShowEditProfile] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -84,7 +84,7 @@ function Profile() {
 
     try {
       const response = await axios.post(
-        "https://nodesolution.in/etworld/update_profile.php", // Replace with your actual API endpoint
+        "https://nodesolution.in/etworld/update_profile.php",
         new URLSearchParams({
           update_profile: true,
           userid: userId,
@@ -363,14 +363,14 @@ function Profile() {
                         padding: "0 50px",
                       }}
                     >
-                      <div className="mb-3">
+                      <div>
                         <h5>
                           Unique ID:{" "}
                           {profileData ? profileData.unique_id : "N/A"}
                         </h5>
                       </div>
 
-                      <div className="mb-3">
+                      <div className="mb-2">
                         <input
                           style={{
                             border: "none",

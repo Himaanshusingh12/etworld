@@ -91,14 +91,11 @@ function SignUp() {
     } catch (err) {
       console.error(err);
       if (err.response) {
-        // The server responded with a status code that falls out of the range of 2xx
         console.error("Response data: ", err.response.data);
         console.error("Response status: ", err.response.status);
       } else if (err.request) {
-        // The request was made but no response was received
         console.error("Request data: ", err.request);
       } else {
-        // Something else triggered the error
         console.error("Error message: ", err.message);
       }
       setError("Error signing up. Please try again later.");
@@ -185,6 +182,7 @@ function SignUp() {
                         border: "none",
                         borderBottom: "1px solid black",
                         textDecoration: "none",
+                        width: "100%",
                       }}
                       type="text"
                       value={formData.last_name}

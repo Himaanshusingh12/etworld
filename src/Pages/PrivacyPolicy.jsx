@@ -20,7 +20,7 @@ function PrivacyPolicy() {
         );
         // Check if response contains the 'content' field
         if (response.data && response.data.content) {
-          setPrivacy(response.data.content); // Set the content from the API
+          setPrivacy(response.data.content);
         } else {
           setPrivacy("No content found");
         }
@@ -32,7 +32,6 @@ function PrivacyPolicy() {
     fetchPrivacyData();
   }, []);
 
-  // Utility function to replace \n with <br />
   const formatContent = (content) => {
     return content.split("\n").map((line, index) => (
       <span key={index}>

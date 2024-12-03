@@ -3,6 +3,7 @@ import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Navbar2 from "../Components/Navbar2";
 
 function VeryfyEmail() {
   const [email, setEmail] = useState("");
@@ -41,7 +42,8 @@ function VeryfyEmail() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
+      <Navbar2 />
       <div className="container mt-5">
         <div className="row justify-content-center">
           <div className="col-lg-6 col-md-8">

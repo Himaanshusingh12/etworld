@@ -14,6 +14,7 @@ import PNF from "./Pages/PNF";
 import ForgetPassword from "./Pages/ForgetPassword";
 import Logistic from "./Pages/Logistic";
 import PrivateRoute from "./Pages/PrivateRoute";
+import FileUpload from "./Pages/FileUpload";
 
 function App() {
   const userLogin = Boolean(localStorage.getItem("user"));
@@ -36,6 +37,7 @@ function App() {
       {/* <Profile /> */}
       {/* <PrivacyPolicy /> */}
       {/* <TermsCondition /> */}
+      {/* <FileUpload /> */}
       {/* <PNF /> */}
 
       {/* <BrowserRouter>
@@ -64,20 +66,22 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/forget-password" element={<ForgetPassword />} />
+          <Route path="/veryfy-email" element={<VeryfyEmail />} />
+          <Route path="/verify-otp" element={<VerifyyOtp />} />
+
 
           {/* Private Routes */}
           <Route element={<PrivateRoute isAuthenticated={userLogin} />}>
             <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/logistic" element={<Logistic />} />
-            <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/feedback" element={<Feedback />} />
             <Route path="/loan-calculator" element={<LoanCalculator />} />
-            <Route path="/veryfy-email" element={<VeryfyEmail />} />
-            <Route path="/verify-otp" element={<VerifyyOtp />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-condition" element={<TermsCondition />} />
+            <Route path="/file-upload" element={<FileUpload />} />
           </Route>
 
           <Route path="*" element={<PNF />} />

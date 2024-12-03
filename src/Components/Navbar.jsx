@@ -72,6 +72,9 @@ function Navbar() {
             <NavLink to="/loan-calculator" className="nav-item nav-link">
               Loan Calculator
             </NavLink>
+            <NavLink to="/file-upload" className="nav-item nav-link">
+              Upload Document
+            </NavLink>
 
             <div className="d-flex align-items-center">
               {user ? (

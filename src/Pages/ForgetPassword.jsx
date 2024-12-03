@@ -3,6 +3,7 @@ import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Navbar2 from "../Components/Navbar2";
 
 function ForgetPassword() {
   const [password, setPassword] = useState("");
@@ -75,7 +76,8 @@ function ForgetPassword() {
   };
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
+      <Navbar2 />
       {/* new one */}
       <div className="container mt-5">
         <div className="row justify-content-center">
