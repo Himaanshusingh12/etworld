@@ -24,7 +24,10 @@ function App() {
 
   return (
     <>
+
       {/* <Navbar /> */}
+
+      {/* this */}
       {/* <Home /> */}
       {/* <About /> */}
       {/* <Logistic /> */}
