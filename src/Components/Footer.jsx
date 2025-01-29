@@ -73,9 +73,9 @@ function Footer() {
               <NavLink className="btn btn-link" to="/terms-condition">
                 Terms &amp; Condition
               </NavLink>
-              <a className="btn btn-link" href>
-                Support
-              </a>
+              <NavLink className="btn btn-link" to="/refund-policy">
+                Refund Policy
+              </NavLink>
             </div>
             <div className="col-lg-3 col-md-6">
               <h4 className="text-light mb-4">Newsletter</h4>

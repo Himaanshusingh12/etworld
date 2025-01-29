@@ -63,9 +63,22 @@ function Navbar() {
                     <i className="fas fa-truck mr-2" /> Logistic
                   </NavLink>
                 </li>
-
                 <li>
                   <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <NavLink to="/track-consingnment" className="dropdown-item">
+                    <i className="fas fa-route mr-2" /> Track Consignment
+                  </NavLink>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <NavLink to="/shipping" className="dropdown-item">
+                    {/* <i className="fas fa-route mr-2" /> Shipping */}
+                    <i className="fas fa-shipping-fast mr-2" /> Shipping
+                  </NavLink>
                 </li>
               </ul>
             </div>
@@ -75,7 +88,44 @@ function Navbar() {
             <NavLink to="/file-upload" className="nav-item nav-link">
               Upload Document
             </NavLink>
-
+            {/* <div className="nav-item dropdown">
+              <a
+                className="nav-link dropdown-toggle"
+                href="#"
+                id="navbarSubuserDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Manage Subuser
+              </a>
+              <ul
+                className="dropdown-menu"
+                aria-labelledby="navbarSubuserDropdown"
+              >
+                <li>
+                  <NavLink to="/manage-roles" className="dropdown-item">
+                    Manage Roles
+                  </NavLink>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <NavLink to="/create-new-user" className="dropdown-item">
+                    Create New Users
+                  </NavLink>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <NavLink to="/list-of-users" className="dropdown-item">
+                    List of Users
+                  </NavLink>
+                </li>
+              </ul>
+            </div> */}
             <div className="d-flex align-items-center">
               {user ? (
                 <>

@@ -19,21 +19,25 @@ function Profile() {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const [showEtCoin, setShowEtCoin] = useState(false);
+  const [showManageSubusers, setShowManageSubusers] = useState(false); // New state for dropdown
+  const [activeSubuserSection, setActiveSubuserSection] = useState(null); // New state for subuser sections
   const navigate = useNavigate();
 
   useEffect(() => {
     // Retrieve the user ID from local storage
     const user = JSON.parse(localStorage.getItem("user"));
+    const api_token = localStorage.getItem("api_token");
     const userId = user ? user.userid : null;
 
     if (userId) {
       axios
         .post(
-          "https://nodesolution.in/etworld/user_profile.php",
+          "https://eyemesto.com/mapp_dev/user_profile.php",
           new URLSearchParams({
             user_profile: true,
             userid: userId,
+            api_token: api_token,
           })
         )
         .then((response) => {
@@ -48,20 +52,62 @@ function Profile() {
   const handleChangePasswordClick = () => {
     setShowChangePassword(true);
     setShowEditProfile(false);
+    setShowManageSubusers(false); // Hide dropdown
     setActiveButton("changePassword");
+    setActiveSubuserSection(null); // Reset subuser section
   };
 
   const handleProfileClick = () => {
     setShowChangePassword(false);
     setShowEditProfile(false);
+    setShowManageSubusers(false); // Hide dropdown
+    setShowEtCoin(false);
     setActiveButton("profile");
+    setActiveSubuserSection(null); // Reset subuser section
   };
 
   //Function to handle Edit profile button click
   const handleEditProfileClick = () => {
     setShowEditProfile(true);
     setShowChangePassword(false);
+    setShowManageSubusers(false); // Hide dropdown
     setActiveButton("editProfile");
+    setActiveSubuserSection(null); // Reset subuser section
+  };
+
+  // Function to handle Et Coin button click
+  const handleEtCoinClick = () => {
+    setShowEtCoin(true);
+    setShowChangePassword(false);
+    setShowEditProfile(false);
+    setShowManageSubusers(false); // Hide dropdown
+    setActiveButton("etCoin");
+    setActiveSubuserSection(null); // Reset subuser section
+  };
+
+  // function to handle manage usersection
+  const handleManageSubusersClick = () => {
+    setShowManageSubusers(!showManageSubusers); // Toggle dropdown visibility
+    setShowChangePassword(false);
+    setShowEditProfile(false);
+    setShowEtCoin(false);
+    setActiveButton("manageSubusers");
+    setActiveSubuserSection(null); // Reset subuser section
+  };
+
+  const handleManageRolesClick = () => {
+    setActiveSubuserSection("manageRoles");
+    // setShowManageSubusers(false); // Hide dropdown after selection
+  };
+
+  const handleCreateNewUsersClick = () => {
+    setActiveSubuserSection("createNewUsers");
+    // setShowManageSubusers(false); // Hide dropdown after selection
+  };
+
+  const handleListOfUsersClick = () => {
+    setActiveSubuserSection("listOfUsers");
+    // setShowManageSubusers(false); // Hide dropdown after selection
   };
 
   //Logout function with navigate
@@ -75,6 +121,7 @@ function Profile() {
     e.preventDefault();
 
     const userData = JSON.parse(localStorage.getItem("user"));
+    const api_token = localStorage.getItem("api_token");
     const userId = userData ? userData.userid : null;
 
     if (!userId) {
@@ -84,9 +131,10 @@ function Profile() {
 
     try {
       const response = await axios.post(
-        "https://nodesolution.in/etworld/update_profile.php",
+        "https://eyemesto.com/mapp_dev/update_profile.php",
         new URLSearchParams({
           update_profile: true,
+          api_token: api_token,
           userid: userId,
           first_name: profileData.first_name,
           last_name: profileData.last_name,
@@ -107,6 +155,7 @@ function Profile() {
     e.preventDefault();
 
     const userData = JSON.parse(localStorage.getItem("user"));
+    const api_token = localStorage.getItem("api_token");
     const userId = userData ? userData.userid : null;
 
     if (!userId) {
@@ -121,10 +170,11 @@ function Profile() {
 
     try {
       const response = await axios.post(
-        "https://nodesolution.in/etworld/change_pass.php",
+        "https://eyemesto.com/mapp_dev/change_pass.php",
         new URLSearchParams({
           change_pass: true,
           method: "post",
+          api_token: api_token,
           old_password: oldPassword,
           password: password,
           userid: userId,
@@ -152,6 +202,110 @@ function Profile() {
 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  // section for create new subuser
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    mobile: "",
+    role: "",
+    password: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmits = async (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords and Confirm password do not match.");
+      return;
+    }
+
+    //phone number validation
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(formData.mobile)) {
+      setError("Phone number must be exactly 10 digits.");
+      return;
+    }
+
+    // Password validation
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-={}|[\]\\:";'<>?,./]).{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      setError(
+        "password must be at 8 character long, contain at least one uppercase letter, one lowercase letter, and one special character."
+      );
+      return;
+    }
+
+    setError("");
+
+    try {
+      const response = await axios.post(
+        // "https://eyemesto.com/mapp/signup.php",
+        new URLSearchParams({
+          createnewuser: true,
+          name: formData.name,
+          email: formData.email,
+          mobile: formData.mobile,
+          role: formData.role,
+          password: formData.password,
+        })
+      );
+
+      // console.log("API Response:", response.data);
+
+      if (response.data.response === "1") {
+        setFormData({
+          name: "",
+          email: "",
+          mobile: "",
+          role: "",
+          password: "",
+        });
+      } else {
+        setError(
+          response.data.message || "Something went wrong. Please try again."
+        );
+      }
+    } catch (err) {
+      console.log(error);
+    }
+  };
+
+  // Section for fetch list of users from backend
+  const [user, setUser] = useState([]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("https//....");
+      console.log("The fetched users are:", response.data);
+      if (response.status === 200) {
+        setUser(response.data);
+      }
+    } catch (err) {
+      console.log("Error fetching users:", err);
+    }
+  };
+
+  // section for add new role
+  const [value, setValue] = useState({
+    role: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -189,6 +343,44 @@ function Profile() {
                   Change Password
                 </button>
                 <button
+                  className={`list-group-item list-group-item-action ${
+                    activeButton === "etCoin" ? "active bg-primary" : ""
+                  }`}
+                  onClick={handleEtCoinClick}
+                >
+                  Et Coin
+                </button>
+                <button
+                  className={`list-group-item list-group-item-action ${
+                    activeButton === "manageSubusers" ? "active bg-primary" : ""
+                  }`}
+                  onClick={handleManageSubusersClick}
+                >
+                  Manage Subusers
+                </button>
+                {showManageSubusers && (
+                  <div className="list-group">
+                    <button
+                      className="list-group-item list-group-item-action"
+                      onClick={handleManageRolesClick}
+                    >
+                      Manage Roles
+                    </button>
+                    <button
+                      className="list-group-item list-group-item-action"
+                      onClick={handleCreateNewUsersClick}
+                    >
+                      Create New Users
+                    </button>
+                    <button
+                      className="list-group-item list-group-item-action"
+                      onClick={handleListOfUsersClick}
+                    >
+                      List of Users
+                    </button>
+                  </div>
+                )}
+                <button
                   className={`list-group-item list-group-item-action text-danger ${
                     activeButton === "logout" ? "active bg-primary" : ""
                   }`}
@@ -204,12 +396,16 @@ function Profile() {
           <div className="col-md-8 d-flex">
             <div className="card shadow h-100 w-100">
               <div className="card-body">
-                <h4 className="card-title text-center mb-4">
-                  {showChangePassword ? "Change Your Password" : "User Profile"}
-                </h4>
-                {/* Conditionally render Profile or Change Password form */}
+                {/* Conditionally render the heading only for the profile section */}
+                {activeButton === "profile" && (
+                  <h4 className="card-title text-center mb-4">User Profile</h4>
+                )}
+                {/* Conditionally render Change Password or other sections */}
                 {showChangePassword ? (
                   <div>
+                    <h4 className="card-title text-center mb-4">
+                      Change Your Password
+                    </h4>
                     <form
                       className="was-validated"
                       onSubmit={handleSubmit}
@@ -457,6 +653,223 @@ function Profile() {
                       <div className="mt-3 alert alert-info">{editMessage}</div>
                     )}
                   </div>
+                ) : showEtCoin ? (
+                  <div>
+                    <h4 className="card-title text-center mb-4">Et Coin</h4>
+                    <div className="mb-3">
+                      <p className="text-center">
+                        Your current Et Coin balance is: 0
+                      </p>
+                      {/* Add any additional functionality related to Et Coin here */}
+                    </div>
+                  </div>
+                ) : activeSubuserSection === "manageRoles" ? (
+                  <div>
+                    {/* <h5>Manage Roles Section</h5> */}
+                    <div>
+                      <h4 className="card-title text-center mb-4">
+                        Add New Role
+                      </h4>
+                      <form
+                        className="was-validated"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          padding: "0 50px",
+                        }}
+                      >
+                        <div
+                          className="mb-3 mt-3"
+                          style={{ position: "relative" }}
+                        >
+                          <input
+                            style={{
+                              border: "none",
+                              borderBottom: "1px solid black",
+                              textDecoration: "none",
+                              width: "100%",
+                            }}
+                            className="form-control"
+                            type="text"
+                            id="role"
+                            placeholder="Enter Role Name"
+                            name="role"
+                            required
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          style={{ borderRadius: "15px" }}
+                        >
+                          Create New Role
+                        </button>
+                      </form>
+                      {message && (
+                        <div className="mt-3 alert alert-info">{message}</div>
+                      )}
+
+                      <hr className="my-4" />
+                    </div>
+                    {/* Manage Roles Content */}
+                  </div>
+                ) : activeSubuserSection === "createNewUsers" ? (
+                  <div>
+                    {/* <h5>Create New Users Section</h5> */}
+                    <div>
+                      <h4 className="card-title text-center mb-4">
+                        Create New User
+                      </h4>
+                      <form
+                        className="was-validated"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          padding: "0 50px",
+                        }}
+                        onSubmit={handleSubmits}
+                      >
+                        <div
+                          className="mb-3 mt-3"
+                          style={{ position: "relative" }}
+                        >
+                          <input
+                            style={{
+                              border: "none",
+                              borderBottom: "1px solid black",
+                              textDecoration: "none",
+                              width: "100%",
+                            }}
+                            className="form-control"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            type="text"
+                            id="name"
+                            placeholder="Enter Name"
+                            name="name"
+                            required
+                          />
+                        </div>
+
+                        <div className="mb-3" style={{ position: "relative" }}>
+                          <input
+                            style={{
+                              border: "none",
+                              borderBottom: "1px solid black",
+                              textDecoration: "none",
+                              width: "100%",
+                            }}
+                            className="form-control"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            type="email"
+                            id="email"
+                            placeholder="Enter Email"
+                            name="email"
+                            required
+                          />
+                        </div>
+
+                        <div className="mb-3" style={{ position: "relative" }}>
+                          <input
+                            style={{
+                              border: "none",
+                              borderBottom: "1px solid black",
+                              textDecoration: "none",
+                              width: "100%",
+                            }}
+                            className="form-control"
+                            value={formData.mobile}
+                            onChange={handleInputChange}
+                            type="number"
+                            id="mobile"
+                            placeholder="Enter Mobile Number"
+                            name="mobile"
+                            required
+                          />
+                        </div>
+                        <div className="mb-3" style={{ position: "relative" }}>
+                          <input
+                            style={{
+                              border: "none",
+                              borderBottom: "1px solid black",
+                              textDecoration: "none",
+                              width: "100%",
+                            }}
+                            className="form-control"
+                            value={formData.role}
+                            onChange={handleInputChange}
+                            type="text"
+                            id="role"
+                            placeholder="Enter Role"
+                            name="role"
+                            required
+                          />
+                        </div>
+                        <div className="mb-3" style={{ position: "relative" }}>
+                          <input
+                            style={{
+                              border: "none",
+                              borderBottom: "1px solid black",
+                              textDecoration: "none",
+                              width: "100%",
+                            }}
+                            className="form-control"
+                            type="password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            id="password"
+                            placeholder="Enter Password"
+                            name="password"
+                            required
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          style={{ borderRadius: "15px" }}
+                        >
+                          Create User
+                        </button>
+                      </form>
+                      {message && (
+                        <div className="mt-3 alert alert-info">{message}</div>
+                      )}
+
+                      <hr className="my-4" />
+                    </div>
+                  </div>
+                ) : activeSubuserSection === "listOfUsers" ? (
+                  <div>
+                    {/* <h5>List of Users Section</h5> */}
+                    <div class="container mt-3">
+                      <h2>Manage User Section</h2>
+                      <div className="table-responsive">
+                        <table class="table table table-striped">
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                              <th>Email</th>
+                              <th>Mobile</th>
+                              <th>Role</th>
+                              <th>Password</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>John</td>
+                              <td>john@example.com</td>
+                              <td>+91 0987654321</td>
+                              <td>Sales Man</td>
+                              <td>54321Aa@</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    {/* List of Users Content */}
+                  </div>
                 ) : (
                   <div className="list-group">
                     {profileData ? (
@@ -515,3 +928,330 @@ function Profile() {
 }
 
 export default Profile;
+
+// {
+//   /* <div className="col-md-8 d-flex">
+//             <div className="card shadow h-100 w-100">
+//               <div className="card-body">
+//                 <h4 className="card-title text-center mb-4">
+//                   {showChangePassword ? "Change Your Password" : "User Profile"}
+//                 </h4>
+//                 {showChangePassword ? (
+//                   <div>
+//                     <form
+//                       className="was-validated"
+//                       onSubmit={handleSubmit}
+//                       style={{
+//                         display: "flex",
+//                         flexDirection: "column",
+//                         padding: "0 50px",
+//                       }}
+//                     >
+//                       <div
+//                         className="mb-3 mt-3"
+//                         style={{ position: "relative" }}
+//                       >
+//                         <input
+//                           style={{
+//                             border: "none",
+//                             borderBottom: "1px solid black",
+//                             textDecoration: "none",
+//                             width: "100%",
+//                           }}
+//                           type={showOldPassword ? "text" : "password"}
+//                           className="form-control"
+//                           id="oldPassword"
+//                           placeholder="Old Password"
+//                           name="oldPassword"
+//                           value={oldPassword}
+//                           onChange={(e) => setOldPassword(e.target.value)}
+//                           required
+//                         />
+//                         <button
+//                           type="button"
+//                           onClick={toggleOldPasswordVisibility}
+//                           className="btn btn-link"
+//                           style={{
+//                             position: "absolute",
+//                             right: "20px",
+//                             top: "2px",
+//                             fontSize: "16px",
+//                             background: "none",
+//                             border: "none",
+//                             cursor: "pointer",
+//                           }}
+//                         >
+//                           {showOldPassword ? (
+//                             <i className="fas fa-eye"></i>
+//                           ) : (
+//                             <i className="fas fa-eye-slash"></i>
+//                           )}
+//                         </button>
+//                       </div>
+
+//                       <div className="mb-3" style={{ position: "relative" }}>
+//                         <input
+//                           style={{
+//                             border: "none",
+//                             borderBottom: "1px solid black",
+//                             textDecoration: "none",
+//                             width: "100%",
+//                           }}
+//                           type={showNewPassword ? "text" : "password"}
+//                           className="form-control"
+//                           id="newPassword"
+//                           placeholder="New Password"
+//                           name="newPassword"
+//                           value={password}
+//                           onChange={(e) => setPassword(e.target.value)}
+//                           required
+//                         />
+//                         <button
+//                           type="button"
+//                           onClick={togglePasswordVisibility}
+//                           className="btn btn-link"
+//                           style={{
+//                             position: "absolute",
+//                             right: "20px",
+//                             top: "2px",
+//                             fontSize: "16px",
+//                             background: "none",
+//                             border: "none",
+//                             cursor: "pointer",
+//                           }}
+//                         >
+//                           {showNewPassword ? (
+//                             <i className="fas fa-eye"></i>
+//                           ) : (
+//                             <i className="fas fa-eye-slash"></i>
+//                           )}
+//                         </button>
+//                       </div>
+
+//                       <div className="mb-3" style={{ position: "relative" }}>
+//                         <input
+//                           style={{
+//                             border: "none",
+//                             borderBottom: "1px solid black",
+//                             textDecoration: "none",
+//                             width: "100%",
+//                           }}
+//                           type={showConfirmPassword ? "text" : "password"}
+//                           className="form-control"
+//                           id="confirmPassword"
+//                           placeholder="Confirm Password"
+//                           name="confirmPassword"
+//                           value={confirmPassword}
+//                           onChange={(e) => setConfirmPassword(e.target.value)}
+//                           required
+//                         />
+//                         <button
+//                           type="button"
+//                           onClick={toggleConfirmPasswordVisibility}
+//                           className="btn btn-link"
+//                           style={{
+//                             position: "absolute",
+//                             right: "20px",
+//                             top: "2px",
+//                             fontSize: "16px",
+//                             background: "none",
+//                             border: "none",
+//                             cursor: "pointer",
+//                           }}
+//                         >
+//                           {showConfirmPassword ? (
+//                             <i className="fas fa-eye"></i>
+//                           ) : (
+//                             <i className="fas fa-eye-slash"></i>
+//                           )}
+//                         </button>
+//                       </div>
+
+//                       <button
+//                         type="submit"
+//                         className="btn btn-primary"
+//                         style={{ borderRadius: "15px" }}
+//                       >
+//                         Change Password
+//                       </button>
+//                     </form>
+//                     {message && (
+//                       <div className="mt-3 alert alert-info">{message}</div>
+//                     )}
+
+//                     <hr className="my-4" />
+//                   </div>
+//                 ) : showEditProfile ? (
+//                   <div>
+//                     <form
+//                       onSubmit={handleEditProfileSubmit}
+//                       style={{
+//                         display: "flex",
+//                         flexDirection: "column",
+//                         padding: "0 50px",
+//                       }}
+//                     >
+//                       <div>
+//                         <h5>
+//                           Unique ID:{" "}
+//                           {profileData ? profileData.unique_id : "N/A"}
+//                         </h5>
+//                       </div>
+
+//                       <div className="mb-2">
+//                         <input
+//                           style={{
+//                             border: "none",
+//                             borderBottom: "1px solid black",
+//                             textDecoration: "none",
+//                             width: "100%",
+//                           }}
+//                           type="text"
+//                           className="form-control"
+//                           placeholder="First Name"
+//                           value={profileData ? profileData.first_name : ""}
+//                           onChange={(e) =>
+//                             setProfileData({
+//                               ...profileData,
+//                               first_name: e.target.value,
+//                             })
+//                           }
+//                           required
+//                         />
+//                       </div>
+//                       <div className="mb-3">
+//                         <input
+//                           style={{
+//                             border: "none",
+//                             borderBottom: "1px solid black",
+//                             textDecoration: "none",
+//                             width: "100%",
+//                           }}
+//                           type="text"
+//                           className="form-control"
+//                           placeholder="Last Name"
+//                           value={profileData ? profileData.last_name : ""}
+//                           onChange={(e) =>
+//                             setProfileData({
+//                               ...profileData,
+//                               last_name: e.target.value,
+//                             })
+//                           }
+//                           required
+//                         />
+//                       </div>
+//                       <div className="mb-3">
+//                         <input
+//                           style={{
+//                             border: "none",
+//                             borderBottom: "1px solid black",
+//                             textDecoration: "none",
+//                             width: "100%",
+//                           }}
+//                           type="text"
+//                           className="form-control"
+//                           placeholder="Email"
+//                           value={profileData ? profileData.email : ""}
+//                           readOnly
+//                         />
+//                       </div>
+
+//                       <div className="mb-3">
+//                         <input
+//                           style={{
+//                             border: "none",
+//                             borderBottom: "1px solid black",
+//                             textDecoration: "none",
+//                             width: "100%",
+//                           }}
+//                           type="text"
+//                           className="form-control"
+//                           placeholder="Phone"
+//                           value={profileData ? profileData.mobile : ""}
+//                           readOnly
+//                         />
+//                       </div>
+
+//                       <button
+//                         type="submit"
+//                         className="btn btn-primary w-40"
+//                         style={{ borderRadius: "15px" }}
+//                       >
+//                         Save Changes
+//                       </button>
+//                     </form>
+//                     {editMessage && (
+//                       <div className="mt-3 alert alert-info">{editMessage}</div>
+//                     )}
+//                   </div>
+//                 ) : showEtCoin ? (
+//                   <div>
+//                     <h4 className="card-title text-center mb-4">Et Coin</h4>
+//                     <div className="mb-3">
+//                       <p className="text-center">
+//                         Your current Et Coin balance is:0
+//                       </p>
+//                     </div>
+//                   </div>
+//                 ) : activeSubuserSection === "manageRoles" ? (
+//                   <div>
+//                     <h5>Manage Roles Section</h5>
+//                   </div>
+//                 ) : activeSubuserSection === "createNewUsers" ? (
+//                   <div>
+//                     <h5>Create New Users Section</h5>
+//                   </div>
+//                 ) : activeSubuserSection === "listOfUsers" ? (
+//                   <div>
+//                     <h5>List of Users Section</h5>
+//                   </div>
+//                 ) : (
+//                   <div className="list-group">
+//                     {profileData ? (
+//                       <>
+//                         <div className="list-group-item d-flex justify-content-between align-items-center">
+//                           <strong style={{ marginLeft: "80px" }}>
+//                             Unique ID
+//                           </strong>
+//                           <span style={{ marginRight: "80px" }}>
+//                             {profileData.unique_id}
+//                           </span>
+//                         </div>
+//                         <div className="list-group-item d-flex justify-content-between align-items-center">
+//                           <strong style={{ marginLeft: "80px" }}>
+//                             First Name
+//                           </strong>
+//                           <span style={{ marginRight: "80px" }}>
+//                             {profileData.first_name}
+//                           </span>
+//                         </div>
+//                         <div className="list-group-item d-flex justify-content-between align-items-center">
+//                           <strong style={{ marginLeft: "80px" }}>
+//                             Last Name
+//                           </strong>
+//                           <span style={{ marginRight: "80px" }}>
+//                             {profileData.last_name}
+//                           </span>
+//                         </div>
+//                         <div className="list-group-item d-flex justify-content-between align-items-center">
+//                           <strong style={{ marginLeft: "80px" }}>Email</strong>
+//                           <span style={{ marginRight: "80px" }}>
+//                             {profileData.email}
+//                           </span>
+//                         </div>
+//                         <div className="list-group-item d-flex justify-content-between align-items-center">
+//                           <strong style={{ marginLeft: "80px" }}>Phone</strong>
+//                           <span style={{ marginRight: "80px" }}>
+//                             {profileData.mobile}
+//                           </span>
+//                         </div>
+//                       </>
+//                     ) : (
+//                       <p className="text-center">Loading profile data...</p>
+//                     )}
+//                   </div>
+//                 )}
+//               </div>
+//             </div>
+//           </div> */
+// }

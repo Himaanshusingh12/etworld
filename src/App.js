@@ -15,6 +15,9 @@ import ForgetPassword from "./Pages/ForgetPassword";
 import Logistic from "./Pages/Logistic";
 import PrivateRoute from "./Pages/PrivateRoute";
 import FileUpload from "./Pages/FileUpload";
+import RefundPolicy from "./Pages/RefundPolicy";
+import TrackConsingment from "./Pages/TrackConsingment";
+import Shipping from "./Pages/Shipping";
 
 function App() {
   const userLogin = Boolean(localStorage.getItem("user"));
@@ -38,7 +41,10 @@ function App() {
       {/* <PrivacyPolicy /> */}
       {/* <TermsCondition /> */}
       {/* <FileUpload /> */}
+      {/* <RefundPolicy /> */}
       {/* <PNF /> */}
+      {/* <TrackConsingment /> */}
+      {/* <Shipping /> */}
 
       {/* <BrowserRouter>
         <Routes>
@@ -82,6 +88,9 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-condition" element={<TermsCondition />} />
             <Route path="/file-upload" element={<FileUpload />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
+            <Route path="/track-consingnment" element={<TrackConsingment />} />
+            <Route path="/shipping" element={<Shipping />} />
           </Route>
 
           <Route path="*" element={<PNF />} />

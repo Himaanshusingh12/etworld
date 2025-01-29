@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
-import Navbar from "../Components/Navbar";
+import React, { useState } from "react";
 import Header from "../Components/Header";
-import Footer from "../Components/Footer";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar2 from "../Components/Navbar2";
@@ -13,7 +11,7 @@ function Login() {
   });
 
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -33,13 +31,12 @@ function Login() {
       return;
     }
 
-    setLoading(true);
     setError("");
 
     try {
       // Send API request to login
       const response = await axios.post(
-        "https://nodesolution.in/etworld/signin.php",
+        "https://eyemesto.com/mapp_dev/signin.php",
         new URLSearchParams({
           signin: true,
           unique_id: credintials.unique_id,
@@ -50,6 +47,7 @@ function Login() {
       if (response.data.response === "1") {
         // Successful login
         localStorage.setItem("user", JSON.stringify(response.data));
+        localStorage.setItem("api_token", response.data.api_token);
         console.log("Login successful:", response.data);
         console.log("Login successful, navigating to home...");
         navigate("/home");
@@ -61,8 +59,6 @@ function Login() {
     } catch (err) {
       console.error(err);
       setError("An error occurred. Please try again later.");
-    } finally {
-      setLoading(false);
     }
   };
 

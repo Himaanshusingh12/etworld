@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -10,14 +9,17 @@ function VeryfyEmail() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
+  const api_token = localStorage.getItem("api_token");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://nodesolution.in/etworld/check_email.php",
+        "https://eyemesto.com/mapp/check_email.php",
         new URLSearchParams({
           check_email: true,
           method: "post",
+          api_token: api_token,
           email: email,
         })
       );

@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import Navbar from "../Components/Navbar";
+import React, { useState } from "react";
 import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -15,6 +14,7 @@ function ForgetPassword() {
 
   // Retrieve userId from local storage
   const userId = localStorage.getItem("userId");
+  const api_token = localStorage.getItem("api_token");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,10 +43,11 @@ function ForgetPassword() {
 
     try {
       const response = await axios.post(
-        "https://nodesolution.in/etworld/change_pass.php",
+        "https://eyemesto.com/mapp/change_pass.php",
         new URLSearchParams({
           change_pass: true,
           method: "post",
+          api_token: api_token,
           password: password,
           userid: userId,
         })
@@ -58,7 +59,7 @@ function ForgetPassword() {
         console.log("Password changed successfully. Navigating to login.");
 
         // Redirect to login page or another relevant page
-        navigate("/login");
+        navigate("/");
       } else {
         setMessage("Failed to update password: " + response.data.message);
       }
