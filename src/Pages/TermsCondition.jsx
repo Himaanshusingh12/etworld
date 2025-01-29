@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
 import axios from "axios";
-
+import DOMPurify from "dompurify";
 function TermsCondition() {
   const [termsData, setTermsData] = useState(null);
   const [error, setError] = useState(null);
@@ -12,7 +12,7 @@ function TermsCondition() {
     const fetchTermsData = async () => {
       try {
         const response = await axios.post(
-          "https://nodesolution.in/etworld/terms_conditions.php",
+          "https://eyemesto.com/mapp/terms_conditions.php",
           new URLSearchParams({
             terms_conditions: true,
             method: "post",
@@ -36,25 +36,22 @@ function TermsCondition() {
     return <div>{error}</div>;
   }
 
-  // Utility function to replace \n with <br />
-  const formatContent = (content) => {
-    return content.split("\n").map((line, index) => (
-      <span key={index}>
-        {line}
-        <br />
-      </span>
-    ));
-  };
   return (
     <>
       <Navbar />
       <div style={styles.termsContainer}>
-        <h1 style={styles.termsTitle}>Terms and Conditions</h1>
+        <h1 style={styles.termsTitle}>Terms & Condition</h1>
         <div style={styles.termsContent}>
-          {termsData ? (
-            formatContent(termsData)
+          {error ? (
+            <p style={styles.error}>{error}</p>
+          ) : termsData ? (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(termsData),
+              }}
+            />
           ) : (
-            <p>No terms and conditions available.</p>
+            <p>No Terms & Condition Available .</p>
           )}
         </div>
       </div>

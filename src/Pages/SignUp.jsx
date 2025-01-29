@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Navbar from "../Components/Navbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { Link, useNavigate } from "react-router-dom";
@@ -58,7 +57,7 @@ function SignUp() {
 
     try {
       const response = await axios.post(
-        "https://nodesolution.in/etworld/signup.php",
+        "https://eyemesto.com/mapp_dev/signup.php",
         new URLSearchParams({
           signup: true,
           first_name: formData.first_name,
@@ -82,7 +81,7 @@ function SignUp() {
           confirmPassword: "",
           refcode: "",
         });
-        navigate("/login");
+        navigate("/");
       } else {
         setError(
           response.data.message || "Something went wrong. Please try again."

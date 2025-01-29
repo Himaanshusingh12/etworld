@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import axios from "axios";
+import DOMPurify from "dompurify";
 
 function PrivacyPolicy() {
   const [privacy, setPrivacy] = useState(null);
@@ -12,12 +13,13 @@ function PrivacyPolicy() {
     const fetchPrivacyData = async () => {
       try {
         const response = await axios.post(
-          "https://nodesolution.in/etworld/privacy_policy.php",
+          "https://eyemesto.com/mapp/privacy_policy.php",
           new URLSearchParams({
             privacy_policy: true,
             method: "post",
           })
         );
+        // console.log("API Response:", response);
         // Check if response contains the 'content' field
         if (response.data && response.data.content) {
           setPrivacy(response.data.content);
@@ -31,23 +33,20 @@ function PrivacyPolicy() {
 
     fetchPrivacyData();
   }, []);
-
-  const formatContent = (content) => {
-    return content.split("\n").map((line, index) => (
-      <span key={index}>
-        {line}
-        <br />
-      </span>
-    ));
-  };
   return (
     <>
       <Navbar />
       <div style={styles.termsContainer}>
         <h1 style={styles.termsTitle}>Privacy and Policy</h1>
         <div style={styles.termsContent}>
-          {privacy ? (
-            formatContent(privacy)
+          {error ? (
+            <p style={styles.error}>{error}</p>
+          ) : privacy ? (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(privacy),
+              }}
+            />
           ) : (
             <p>No Privacy and Policy available.</p>
           )}
