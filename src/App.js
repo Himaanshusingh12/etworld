@@ -26,8 +26,6 @@ function App() {
     <>
 
       {/* <Navbar /> */}
-
-      {/* this */}
       {/* <Home /> */}
       {/* <About /> */}
       {/* <Logistic /> */}
