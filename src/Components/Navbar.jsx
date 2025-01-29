@@ -39,7 +39,7 @@ function Navbar() {
         </button>
         <div className="collapse navbar-collapse" id="navbarCollapse">
           <div className="navbar-nav ms-auto p-4 p-lg-0">
-            <NavLink to="/" className="nav-item nav-link active">
+            <NavLink to="/home" className="nav-item nav-link active">
               Home
             </NavLink>
             <NavLink to="/about" className="nav-item nav-link">
