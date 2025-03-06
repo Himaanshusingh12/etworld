@@ -63,6 +63,13 @@ function Navbar2() {
 
             <div className="d-flex align-items-center">
               <Link
+                to="/subuser-login"
+                className="btn btn-outline-primary me-2"
+                style={{ height: "auto", lineHeight: "normal" }}
+              >
+                Login As Subuser
+              </Link>
+              <Link
                 to="/"
                 className="btn btn-outline-primary me-2"
                 style={{ height: "auto", lineHeight: "normal" }}

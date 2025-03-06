@@ -15,6 +15,7 @@ function Home() {
             <div className="carousel-item active" style={{ height: "500px" }}>
               <img
                 src="img/carousel-1.jpg"
+                // src="img/logistic3.jpg.webp"
                 className="d-block w-100"
                 alt="Transport & Logistics Solution"
               />

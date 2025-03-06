@@ -1,75 +1,20 @@
 import React, { useState } from "react";
-import Header from "../Components/Header";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import Navbar2 from "../Components/Navbar2";
+import Header from "../Components/Header";
+import { Link } from "react-router-dom";
 
-function Login() {
-  const [credintials, setCredentials] = useState({
-    unique_id: "",
-    password: "",
-  });
-
+function SubuserLogin() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials({
-      ...credintials,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!credintials.unique_id || !credintials.password) {
-      setError("Please enter both Unique ID and Password.");
-      return;
-    }
-
-    setError("");
-
-    try {
-      // Send API request to login
-      const response = await axios.post(
-        "https://eyemesto.com/mapp_dev/signin.php",
-        new URLSearchParams({
-          signin: true,
-          unique_id: credintials.unique_id,
-          password: credintials.password,
-        })
-      );
-
-      if (response.data.response === "1") {
-        // Successful login
-        localStorage.setItem("user", JSON.stringify(response.data));
-        localStorage.setItem("api_token", response.data.api_token);
-        console.log("Login successful:", response.data);
-        console.log("Login successful, navigating to home...");
-        navigate("/home");
-      } else if (response.data.response === "0") {
-        setError("Invalid Unique ID or password");
-      } else {
-        setError("Login failed. Please check your credentials.");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("An error occurred. Please try again later.");
-    }
-  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
   return (
     <>
-      {/* <Navbar /> */}
       <Navbar2 />
-      <Header title="Login" secondtitle="Login" />
+      <Header title="Subuser" secondtitle="subuser" />
+
       <div className="container">
         <div
           style={{
@@ -111,18 +56,13 @@ function Login() {
             >
               <div className="card-body p-0">
                 <h4 className="card-title text-center mb-4">Log in</h4>
-                <form className="was-validated" onSubmit={handleSubmit}>
+                <form className="was-validated">
                   <div className="mb-3 mt-3">
                     <input
-                      // style={{
-                      //   border: "none",
-                      //   borderBottom: "1px solid black",
-                      //   textDecoration: "none",
-                      // }}
                       type="text"
                       className="form-control"
-                      value={credintials.unique_id}
-                      onChange={handleChange}
+                      // value={credintials.unique_id}
+                      // onChange={handleChange}
                       id="unique_id"
                       placeholder="Unique Id"
                       name="unique_id"
@@ -131,14 +71,9 @@ function Login() {
                   </div>
                   <div className="mb-3" style={{ position: "relative" }}>
                     <input
-                      // style={{
-                      //   border: "none",
-                      //   borderBottom: "1px solid black",
-                      //   textDecoration: "none",
-                      // }}
                       type={showPassword ? "text" : "password"}
-                      value={credintials.password}
-                      onChange={handleChange}
+                      //   value={credintials.password}
+                      //   onChange={handleChange}
                       className="form-control"
                       id="password"
                       placeholder="Password"
@@ -209,9 +144,8 @@ function Login() {
           </div>
         </div>
       </div>
-      {/* <Footer /> */}
     </>
   );
 }
 
-export default Login;
+export default SubuserLogin;

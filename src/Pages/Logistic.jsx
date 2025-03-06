@@ -1,255 +1,71 @@
 import React from "react";
-import Navbar from "../Components/Navbar";
-import Header from "../Components/Header";
 import Footer from "../Components/Footer";
+import LogisticHeader from "../Components/LogisticHeader";
+import { NavLink } from "react-router-dom";
 
 function Logistic() {
   return (
     <>
-      <Navbar />
-      <Header title="Services" secondtitle="Services" />
-      {/* Service Start */}
-      <div className="container-xxl py-5">
-        <div className="container py-5">
-          <div className="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 className="text-secondary text-uppercase">Our Services</h6>
-            <h1 className="mb-5">Explore Our Services</h1>
+      <LogisticHeader />
+      <div className="position-relative vh-100">
+        {/* Background Image */}
+        <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark">
+          <img
+            src="img/logistic6.jpeg"
+            alt="Background"
+            className="w-100 h-100 object-fit-cover opacity-75"
+          />
+        </div>
+
+        {/* Content */}
+        <div className="position-relative z-1 text-center py-5">
+          <h1 className="fw-bold text-white">Where now meets next</h1>
+
+          {/* Menu Options */}
+          <div className="d-flex mt-5 justify-content-center align-items-center text-center">
+            <div className="d-flex">
+              <div className="bg-white text-dark px-5 py-4 rounded shadow-sm">
+                <i className="bi bi-calculator fs-2 d-block"></i>
+                <span className="fw-bold">RATE</span>
+              </div>
+
+              <div className="bg-primary text-white px-5 py-4 rounded shadow-sm">
+                <i className="bi bi-box-seam fs-2 d-block"></i>
+                <span className="fw-bold">TRACK</span>
+              </div>
+
+              <NavLink
+                to="/shipping"
+                className="text-dark text-decoration-none"
+              >
+                <div className="bg-white text-dark px-5 py-4 rounded shadow-sm">
+                  <i className="bi bi-box fs-2 d-block"></i>
+                  <span className="fw-bold">SHIP</span>
+                </div>
+              </NavLink>
+            </div>
           </div>
-          <div className="row g-4">
-            <div
-              className="col-md-6 col-lg-4 wow fadeInUp"
-              data-wow-delay="0.3s"
-            >
-              <div className="service-item p-4">
-                <div className="overflow-hidden mb-4">
-                  <img className="img-fluid" src="img/service-1.jpg" alt />
-                </div>
-                <h4 className="mb-3">Air Freight</h4>
-                <p>
-                  Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam
-                  lorem diam.
-                </p>
-                <a className="btn-slide mt-2" href>
-                  <i className="fa fa-arrow-right" />
-                  <span>Read More</span>
-                </a>
-              </div>
-            </div>
-            <div
-              className="col-md-6 col-lg-4 wow fadeInUp"
-              data-wow-delay="0.5s"
-            >
-              <div className="service-item p-4">
-                <div className="overflow-hidden mb-4">
-                  <img className="img-fluid" src="img/service-2.jpg" alt />
-                </div>
-                <h4 className="mb-3">Ocean Freight</h4>
-                <p>
-                  Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam
-                  lorem diam.
-                </p>
-                <a className="btn-slide mt-2" href>
-                  <i className="fa fa-arrow-right" />
-                  <span>Read More</span>
-                </a>
-              </div>
-            </div>
-            <div
-              className="col-md-6 col-lg-4 wow fadeInUp"
-              data-wow-delay="0.7s"
-            >
-              <div className="service-item p-4">
-                <div className="overflow-hidden mb-4">
-                  <img className="img-fluid" src="img/service-3.jpg" alt />
-                </div>
-                <h4 className="mb-3">Road Freight</h4>
-                <p>
-                  Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam
-                  lorem diam.
-                </p>
-                <a className="btn-slide mt-2" href>
-                  <i className="fa fa-arrow-right" />
-                  <span>Read More</span>
-                </a>
-              </div>
-            </div>
-            <div
-              className="col-md-6 col-lg-4 wow fadeInUp"
-              data-wow-delay="0.3s"
-            >
-              <div className="service-item p-4">
-                <div className="overflow-hidden mb-4">
-                  <img className="img-fluid" src="img/service-4.jpg" alt />
-                </div>
-                <h4 className="mb-3">Train Freight</h4>
-                <p>
-                  Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam
-                  lorem diam.
-                </p>
-                <a className="btn-slide mt-2" href>
-                  <i className="fa fa-arrow-right" />
-                  <span>Read More</span>
-                </a>
-              </div>
-            </div>
-            <div
-              className="col-md-6 col-lg-4 wow fadeInUp"
-              data-wow-delay="0.5s"
-            >
-              <div className="service-item p-4">
-                <div className="overflow-hidden mb-4">
-                  <img className="img-fluid" src="img/service-5.jpg" alt />
-                </div>
-                <h4 className="mb-3">Customs Clearance</h4>
-                <p>
-                  Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam
-                  lorem diam.
-                </p>
-                <a className="btn-slide mt-2" href>
-                  <i className="fa fa-arrow-right" />
-                  <span>Read More</span>
-                </a>
-              </div>
-            </div>
-            <div
-              className="col-md-6 col-lg-4 wow fadeInUp"
-              data-wow-delay="0.7s"
-            >
-              <div className="service-item p-4">
-                <div className="overflow-hidden mb-4">
-                  <img className="img-fluid" src="img/service-6.jpg" alt />
-                </div>
-                <h4 className="mb-3">Warehouse Solutions</h4>
-                <p>
-                  Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam
-                  lorem diam.
-                </p>
-                <a className="btn-slide mt-2" href>
-                  <i className="fa fa-arrow-right" />
-                  <span>Read More</span>
-                </a>
-              </div>
-            </div>
+
+          {/* Tracking ID Input */}
+          <div className="d-flex justify-content-center mt-4">
+            <input
+              type="text"
+              className="form-control w-50 fw-bold py-3"
+              placeholder="TRACKING ID"
+            />
+            <button className="btn btn-primary fw-bold px-4 ms-3 py-3">
+              TRACK →
+            </button>
+          </div>
+
+          {/* Ask FedEx Button */}
+          <div className="position-fixed bottom-0 end-0 m-4">
+            <button className="btn btn-primary rounded-pill px-4 py-2 fw-bold">
+              Ask Et World
+            </button>
           </div>
         </div>
       </div>
-      {/* Service End */}
-      {/* Team Start */}
-      <div className="container-xxl py-5">
-        <div className="container py-5">
-          <div className="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 className="text-secondary text-uppercase">Our Team</h6>
-            <h1 className="mb-5">Expert Team Members</h1>
-          </div>
-          <div className="row g-4">
-            <div
-              className="col-lg-3 col-md-6 wow fadeInUp"
-              data-wow-delay="0.3s"
-            >
-              <div className="team-item p-4">
-                <div className="overflow-hidden mb-4">
-                  <img className="img-fluid" src="img/team-1.jpg" alt />
-                </div>
-                <h5 className="mb-0">Full Name</h5>
-                <p>Designation</p>
-                <div className="btn-slide mt-1">
-                  <i className="fa fa-share" />
-                  <span>
-                    <a href>
-                      <i className="fab fa-facebook-f" />
-                    </a>
-                    <a href>
-                      <i className="fab fa-twitter" />
-                    </a>
-                    <a href>
-                      <i className="fab fa-instagram" />
-                    </a>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div
-              className="col-lg-3 col-md-6 wow fadeInUp"
-              data-wow-delay="0.5s"
-            >
-              <div className="team-item p-4">
-                <div className="overflow-hidden mb-4">
-                  <img className="img-fluid" src="img/team-2.jpg" alt />
-                </div>
-                <h5 className="mb-0">Full Name</h5>
-                <p>Designation</p>
-                <div className="btn-slide mt-1">
-                  <i className="fa fa-share" />
-                  <span>
-                    <a href>
-                      <i className="fab fa-facebook-f" />
-                    </a>
-                    <a href>
-                      <i className="fab fa-twitter" />
-                    </a>
-                    <a href>
-                      <i className="fab fa-instagram" />
-                    </a>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div
-              className="col-lg-3 col-md-6 wow fadeInUp"
-              data-wow-delay="0.7s"
-            >
-              <div className="team-item p-4">
-                <div className="overflow-hidden mb-4">
-                  <img className="img-fluid" src="img/team-3.jpg" alt />
-                </div>
-                <h5 className="mb-0">Full Name</h5>
-                <p>Designation</p>
-                <div className="btn-slide mt-1">
-                  <i className="fa fa-share" />
-                  <span>
-                    <a href>
-                      <i className="fab fa-facebook-f" />
-                    </a>
-                    <a href>
-                      <i className="fab fa-twitter" />
-                    </a>
-                    <a href>
-                      <i className="fab fa-instagram" />
-                    </a>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div
-              className="col-lg-3 col-md-6 wow fadeInUp"
-              data-wow-delay="0.9s"
-            >
-              <div className="team-item p-4">
-                <div className="overflow-hidden mb-4">
-                  <img className="img-fluid" src="img/team-4.jpg" alt />
-                </div>
-                <h5 className="mb-0">Full Name</h5>
-                <p>Designation</p>
-                <div className="btn-slide mt-1">
-                  <i className="fa fa-share" />
-                  <span>
-                    <a href>
-                      <i className="fab fa-facebook-f" />
-                    </a>
-                    <a href>
-                      <i className="fab fa-twitter" />
-                    </a>
-                    <a href>
-                      <i className="fab fa-instagram" />
-                    </a>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Team End */}
 
       <Footer />
     </>

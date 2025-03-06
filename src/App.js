@@ -18,6 +18,12 @@ import FileUpload from "./Pages/FileUpload";
 import RefundPolicy from "./Pages/RefundPolicy";
 import TrackConsingment from "./Pages/TrackConsingment";
 import Shipping from "./Pages/Shipping";
+import Request from "./Pages/Request";
+import SubuserLogin from "./Pages/SubuserLogin";
+import Role from "./Pages/Role";
+import AddRole from "./Pages/AddRole";
+import ShippingRate from "./SubuserPages/ShippingRate";
+import PackageDetails from "./Pages/PackageDetails";
 
 function App() {
   const userLogin = Boolean(localStorage.getItem("user"));
@@ -46,6 +52,14 @@ function App() {
       {/* <PNF /> */}
       {/* <TrackConsingment /> */}
       {/* <Shipping /> */}
+      {/* <Request/> */}
+      {/* <SubuserLogin /> */}
+      {/* <SubuserHeader /> */}
+      {/* <SubuserSidepanel /> */}
+      {/* <Role/> */}
+      {/* <AddRole /> */}
+      {/* <ShippingRate /> */}
+      {/* <PackageDetails/> */}
 
       {/* <BrowserRouter>
         <Routes>
@@ -72,6 +86,7 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Login />} />
+          <Route path="/subuser-login" element={<SubuserLogin />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/veryfy-email" element={<VeryfyEmail />} />
@@ -92,6 +107,11 @@ function App() {
             <Route path="/refund-policy" element={<RefundPolicy />} />
             <Route path="/track-consingnment" element={<TrackConsingment />} />
             <Route path="/shipping" element={<Shipping />} />
+            <Route path="/package-details" element={<PackageDetails />} />
+            <Route path="/request" element={<Request />} />
+            <Route path="/role" element={<Role />} />
+            <Route path="/add-role" element={<AddRole />} />
+            <Route path="/shipping-rate" element={<ShippingRate />} />
           </Route>
 
           <Route path="*" element={<PNF />} />

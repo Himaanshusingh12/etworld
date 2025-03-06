@@ -14,7 +14,7 @@ function RefundPolicy() {
       try {
         console.log("Sending request to the API...");
         const response = await axios.post(
-          "https://eyemesto.com/mapp/refund_policy.php",
+          "",
           new URLSearchParams({
             refund_policy: true,
             method: "post",

@@ -66,18 +66,26 @@ function Navbar() {
                 <li>
                   <hr className="dropdown-divider" />
                 </li>
-                <li>
+                {/* <li>
                   <NavLink to="/track-consingnment" className="dropdown-item">
                     <i className="fas fa-route mr-2" /> Track Consignment
+                  </NavLink>
+                </li> */}
+                {/* <li>
+                  <hr className="dropdown-divider" />
+                </li> */}
+                <li>
+                  <NavLink to="/shipping" className="dropdown-item">
+                    {/* <i className="fas fa-route mr-2" /> Shipping */}
+                    <i className="fas fa-shipping-fast mr-2" /> Shipping
                   </NavLink>
                 </li>
                 <li>
                   <hr className="dropdown-divider" />
                 </li>
                 <li>
-                  <NavLink to="/shipping" className="dropdown-item">
-                    {/* <i className="fas fa-route mr-2" /> Shipping */}
-                    <i className="fas fa-shipping-fast mr-2" /> Shipping
+                  <NavLink to="/request" className="dropdown-item">
+                    <i className="fas fa-shipping-fast mr-2" /> Request
                   </NavLink>
                 </li>
               </ul>

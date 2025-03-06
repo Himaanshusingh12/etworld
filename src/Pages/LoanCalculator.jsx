@@ -118,10 +118,10 @@ function LoanCalculator() {
           installmentDate: installmentDate.toLocaleDateString(),
           installmentAmount: monthly.toFixed(2),
           // principalAmount: principalForInstallment.toFixed(2),
-          principalAmount: Math.max(principalForInstallment, 0).toFixed(2), // Changed line
+          principalAmount: Math.max(principalForInstallment, 0).toFixed(2),
           interest: interestForInstallment.toFixed(2),
           // balance: remainingBalance.toFixed(2),
-          balance: Math.max(remainingBalance, 0).toFixed(2), // Changed line
+          balance: Math.max(remainingBalance, 0).toFixed(2),
         });
 
         currentDate = installmentDate; // Update current date for the next installment
@@ -129,7 +129,6 @@ function LoanCalculator() {
 
       setInstallments(generatedInstallments); // Set the generated installments data
     } else {
-      // Handle case where monthly payment is not finite
       setMonthlyPayment(null);
       setTotalPayment(null);
       setTotalInterest(null);

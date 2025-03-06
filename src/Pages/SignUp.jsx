@@ -160,11 +160,11 @@ function SignUp() {
                 <form className="was-validated" onSubmit={handleSubmit}>
                   <div className="mb-3 mt-3">
                     <input
-                      style={{
-                        border: "none",
-                        borderBottom: "1px solid black",
-                        textDecoration: "none",
-                      }}
+                      // style={{
+                      //   border: "none",
+                      //   borderBottom: "1px solid black",
+                      //   textDecoration: "none",
+                      // }}
                       type="text"
                       value={formData.first_name}
                       onChange={handleInputChange}
@@ -177,12 +177,12 @@ function SignUp() {
                   </div>
                   <div className="mb-3">
                     <input
-                      style={{
-                        border: "none",
-                        borderBottom: "1px solid black",
-                        textDecoration: "none",
-                        width: "100%",
-                      }}
+                      // style={{
+                      //   border: "none",
+                      //   borderBottom: "1px solid black",
+                      //   textDecoration: "none",
+                      //   width: "100%",
+                      // }}
                       type="text"
                       value={formData.last_name}
                       onChange={handleInputChange}
@@ -195,11 +195,11 @@ function SignUp() {
                   </div>
                   <div className="mb-3">
                     <input
-                      style={{
-                        border: "none",
-                        borderBottom: "1px solid black",
-                        textDecoration: "none",
-                      }}
+                      // style={{
+                      //   border: "none",
+                      //   borderBottom: "1px solid black",
+                      //   textDecoration: "none",
+                      // }}
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
@@ -212,11 +212,11 @@ function SignUp() {
                   </div>
                   <div className="mb-3">
                     <input
-                      style={{
-                        border: "none",
-                        borderBottom: "1px solid black",
-                        textDecoration: "none",
-                      }}
+                      // style={{
+                      //   border: "none",
+                      //   borderBottom: "1px solid black",
+                      //   textDecoration: "none",
+                      // }}
                       type="number"
                       className="form-control"
                       id="mobile"
@@ -229,11 +229,11 @@ function SignUp() {
                   </div>
                   <div className="mb-3" style={{ position: "relative" }}>
                     <input
-                      style={{
-                        border: "none",
-                        borderBottom: "1px solid black",
-                        textDecoration: "none",
-                      }}
+                      // style={{
+                      //   border: "none",
+                      //   borderBottom: "1px solid black",
+                      //   textDecoration: "none",
+                      // }}
                       type={showPassword ? "text" : "password"}
                       value={formData.password}
                       onChange={handleInputChange}
@@ -266,11 +266,11 @@ function SignUp() {
                   </div>
                   <div className="mb-3" style={{ position: "relative" }}>
                     <input
-                      style={{
-                        border: "none",
-                        borderBottom: "1px solid black",
-                        textDecoration: "none",
-                      }}
+                      // style={{
+                      //   border: "none",
+                      //   borderBottom: "1px solid black",
+                      //   textDecoration: "none",
+                      // }}
                       type={showConfirmPassword ? "text" : "password"}
                       className="form-control"
                       id="confirmPassword"
@@ -303,11 +303,11 @@ function SignUp() {
                   </div>
                   <div className="mb-3">
                     <input
-                      style={{
-                        border: "none",
-                        borderBottom: "1px solid black",
-                        textDecoration: "none",
-                      }}
+                      // style={{
+                      //   border: "none",
+                      //   borderBottom: "1px solid black",
+                      //   textDecoration: "none",
+                      // }}
                       type="text"
                       className="form-control"
                       id="refcode"
@@ -359,3 +359,24 @@ function SignUp() {
 }
 
 export default SignUp;
+
+{
+  /* <div className="mb-3" style={{ position: "relative" }}>
+                          <input
+                            style={{
+                              border: "none",
+                              borderBottom: "1px solid black",
+                              textDecoration: "none",
+                              width: "100%",
+                            }}
+                            className="form-control"
+                            value={formData.role}
+                            onChange={handleInputChange}
+                            type="text"
+                            id="role"
+                            placeholder="Enter Role"
+                            name="role"
+                            required
+                          />
+                        </div> */
+}
