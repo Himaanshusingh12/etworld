@@ -19,6 +19,48 @@ function LogisticSidepanel() {
           >
             <i className="bi bi-box me-2"></i>Create Shipment
           </NavLink>
+          <NavLink
+            to="/schedule-pickup"
+            // className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
+            className="nav-link text-white p-2 mb-2 rounded text-nowrap d-inline-block"
+          >
+            <i className="bi bi-box me-2"></i>Schedule a PickUp
+          </NavLink>
+          <NavLink
+            to="/rate-transit"
+            // className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
+            className="nav-link text-white p-2 mb-2 rounded text-nowrap d-inline-block"
+          >
+            <i className="bi bi-box me-2"></i>Rate and Transit Times
+          </NavLink>
+          <NavLink
+            to="/services-and-packaging-options"
+            // className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
+            className="nav-link text-white p-2 mb-2 rounded text-nowrap d-inline-block"
+          >
+            <i className="bi bi-box me-2"></i>Services and Packaging Options
+          </NavLink>
+          <NavLink
+            to="/special-service-options"
+            // className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
+            className="nav-link text-white p-2 mb-2 rounded text-nowrap d-inline-block"
+          >
+            <i className="bi bi-box me-2"></i>Special Service Options
+          </NavLink>
+          <NavLink
+            to="/global-trade-documents"
+            // className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
+            className="nav-link text-white p-2 mb-2 rounded text-nowrap d-inline-block"
+          >
+            <i className="bi bi-box me-2"></i>Global Trade Documents
+          </NavLink>
+          <NavLink
+            to="/open-shipment"
+            // className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
+            className="nav-link text-white p-2 mb-2 rounded text-nowrap d-inline-block"
+          >
+            <i className="bi bi-box me-2"></i>Create Open Shipment
+          </NavLink>
           {/* <NavLink
             to=""
             className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
