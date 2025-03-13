@@ -24,13 +24,18 @@ import Role from "./Pages/Role";
 import AddRole from "./Pages/AddRole";
 import ShippingRate from "./SubuserPages/ShippingRate";
 import PackageDetails from "./Pages/PackageDetails";
+import SchedulePickUp from "./Pages/SchedulePickUp";
+import RateAndTransitTime from "./Pages/RateAndTransitTime";
+import ServicesAndPackagingOptions from "./Pages/ServicesAndPackagingOptions";
+import SpecialServiceOptions from "./Pages/SpecialServiceOptions";
+import GlobalTradeDocuments from "./Pages/GlobalTradeDocuments";
+import OpenShipment from "./Pages/OpenShipment";
 
 function App() {
   const userLogin = Boolean(localStorage.getItem("user"));
 
   return (
     <>
-
       {/* <Navbar /> */}
       {/* <Home /> */}
       {/* <About /> */}
@@ -80,8 +85,6 @@ function App() {
         </Routes>
       </BrowserRouter> */}
 
-
-
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
@@ -91,7 +94,6 @@ function App() {
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/veryfy-email" element={<VeryfyEmail />} />
           <Route path="/verify-otp" element={<VerifyyOtp />} />
-
 
           {/* Private Routes */}
           <Route element={<PrivateRoute isAuthenticated={userLogin} />}>
@@ -112,12 +114,17 @@ function App() {
             <Route path="/role" element={<Role />} />
             <Route path="/add-role" element={<AddRole />} />
             <Route path="/shipping-rate" element={<ShippingRate />} />
+            <Route path="/schedule-pickup" element={<SchedulePickUp />} />
+            <Route path="/rate-transit" element={<RateAndTransitTime />} />
+            <Route path="/services-and-packaging-options" element={<ServicesAndPackagingOptions />} />
+            <Route path="/special-service-options" element={<SpecialServiceOptions />} />
+            <Route path="/global-trade-documents" element={<GlobalTradeDocuments />} />
+            <Route path="/open-shipment" element={<OpenShipment />} />
           </Route>
 
           <Route path="*" element={<PNF />} />
         </Routes>
       </BrowserRouter>
-
     </>
   );
 }
