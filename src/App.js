@@ -30,6 +30,9 @@ import ServicesAndPackagingOptions from "./Pages/ServicesAndPackagingOptions";
 import SpecialServiceOptions from "./Pages/SpecialServiceOptions";
 import GlobalTradeDocuments from "./Pages/GlobalTradeDocuments";
 import OpenShipment from "./Pages/OpenShipment";
+import UploadDocuments from "./Pages/UploadDocuments";
+import UploadImage from "./Pages/UploadImage";
+import UploadMultipleDocuments from "./Pages/UploadMultipleDocuments";
 
 function App() {
   const userLogin = Boolean(localStorage.getItem("user"));
@@ -116,10 +119,22 @@ function App() {
             <Route path="/shipping-rate" element={<ShippingRate />} />
             <Route path="/schedule-pickup" element={<SchedulePickUp />} />
             <Route path="/rate-transit" element={<RateAndTransitTime />} />
-            <Route path="/services-and-packaging-options" element={<ServicesAndPackagingOptions />} />
-            <Route path="/special-service-options" element={<SpecialServiceOptions />} />
-            <Route path="/global-trade-documents" element={<GlobalTradeDocuments />} />
+            <Route
+              path="/services-and-packaging-options"
+              element={<ServicesAndPackagingOptions />}
+            />
+            <Route
+              path="/special-service-options"
+              element={<SpecialServiceOptions />}
+            />
+            <Route
+              path="/global-trade-documents"
+              element={<GlobalTradeDocuments />}
+            />
             <Route path="/open-shipment" element={<OpenShipment />} />
+            <Route path="/upload" element={<UploadDocuments />} />
+            <Route path="/upload-image" element={<UploadImage />} />
+            <Route path="/upload-multiple" element={<UploadMultipleDocuments />} />
           </Route>
 
           <Route path="*" element={<PNF />} />

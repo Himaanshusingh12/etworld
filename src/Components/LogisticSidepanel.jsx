@@ -61,6 +61,27 @@ function LogisticSidepanel() {
           >
             <i className="bi bi-box me-2"></i>Create Open Shipment
           </NavLink>
+          <NavLink
+            to="/upload"
+            // className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
+            className="nav-link text-white p-2 mb-2 rounded text-nowrap d-inline-block"
+          >
+            <i className="bi bi-box me-2"></i>Upload Document
+          </NavLink>
+          <NavLink
+            to="/upload-image"
+            // className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
+            className="nav-link text-white p-2 mb-2 rounded text-nowrap d-inline-block"
+          >
+            <i className="bi bi-box me-2"></i>Upload Image
+          </NavLink>
+          <NavLink
+            to="/upload-multiple"
+            // className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
+            className="nav-link text-white p-2 mb-2 rounded text-nowrap d-inline-block"
+          >
+            <i className="bi bi-box me-2"></i>Upload Multiple Documents
+          </NavLink>
           {/* <NavLink
             to=""
             className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"

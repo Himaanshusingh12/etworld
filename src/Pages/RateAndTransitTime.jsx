@@ -4,6 +4,87 @@ import LogisticSidepanel from "../Components/LogisticSidepanel";
 import Select from "react-select";
 import axios from "axios";
 
+const LocationInput = ({ placeholder, onSelect }) => {
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const handlePlaceSearch = async (e) => {
+    const value = e.target.value;
+    setQuery(value);
+
+    if (value.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const apiKey = "8fcfddceccc64e24bdaa5fe500984adc";
+      const response = await axios.get(
+        "https://api.opencagedata.com/geocode/v1/json",
+        {
+          params: {
+            q: value,
+            key: apiKey,
+            limit: 5,
+          },
+        }
+      );
+
+      setSuggestions(response.data.results);
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelect = (item) => {
+    const city =
+      item.components.city ||
+      item.components.town ||
+      item.components.village ||
+      "";
+    const zip = item.components.postcode || "";
+    const country = item.components.country_code?.toUpperCase() || "";
+
+    onSelect({ city, zip, country, formatted: item.formatted });
+    setQuery(item.formatted);
+    setSuggestions([]);
+  };
+
+  return (
+    <div className="mb-2">
+      <input
+        type="text"
+        className="form-control"
+        value={query}
+        onChange={handlePlaceSearch}
+        placeholder={placeholder}
+      />
+      {loading && <p>Loading suggestions...</p>}
+      <ul
+        className="list-group"
+        style={{ maxHeight: "200px", overflowY: "auto" }}
+      >
+        {suggestions.map((item, index) => (
+          <li
+            key={index}
+            className="list-group-item"
+            onClick={() => handleSelect(item)}
+            style={{ cursor: "pointer" }}
+          >
+            {item.formatted} -{" "}
+            {item.components.country_code?.toUpperCase() || ""}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
 const RateAndTransitTime = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -45,7 +126,7 @@ const RateAndTransitTime = () => {
     }));
   };
 
-  const [result, setResultData] = useState({});
+  const [result, setResultData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleShowRate = async () => {
@@ -62,21 +143,26 @@ const RateAndTransitTime = () => {
       let results = [];
 
       for (const serviceType of serviceTypes) {
-        const response = await axios.post(
-          "https://fedex-backend-1.onrender.com/api/fedex/rate-transit",
-          {
-            ...calculationData,
-            serviceType,
-          }
-        );
+        try {
+          const response = await axios.post(
+            "https://fedex-backend-1.onrender.com/api/fedex/rate-transit",
+            {
+              ...calculationData,
+              serviceType,
+            }
+          );
 
-        console.log(`Response for ${serviceType}:`, response.data);
+          console.log(`Response for ${serviceType}:`, response.data);
+          results.push({ data: response?.data?.data });
+        } catch (error) {
+          console.error(`Error fetching data for ${serviceType}:`, error);
+          results.push({ serviceType, error: error.message });
+        }
 
-        results.push({ serviceType, data: response.data });
         setResultData([...results]);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Unexpected error:", error);
     } finally {
       setLoading(false);
     }
@@ -116,6 +202,24 @@ const RateAndTransitTime = () => {
     { label: "FedEx Tube", value: "FEDEX_TUBE" },
   ];
 
+  const handleSelectFrom = (data) => {
+    setCalculationData((prev) => ({
+      ...prev,
+      senderCity: data.city,
+      senderPostalCode: data.zip,
+      senderCountryCode: data.country,
+    }));
+  };
+
+  const handleSelectTo = (data) => {
+    setCalculationData((prev) => ({
+      ...prev,
+      recipientCity: data.city,
+      recipientPostalCode: data.zip,
+      recipientCountryCode: data.country,
+    }));
+  };
+
   console.log(result);
 
   return (
@@ -135,32 +239,24 @@ const RateAndTransitTime = () => {
                 </h5>
                 <h6>From *</h6>
                 <div className="mb-2">
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={calculationData.senderCity}
-                    placeholder="From *"
-                    name="senderCity"
-                    onChange={handleChange}
+                  <LocationInput
+                    placeholder="Select From"
+                    onSelect={handleSelectFrom}
                   />
                 </div>
                 <h6>To *</h6>
                 <div className="mb-2">
-                  <input
-                    type="text"
-                    value={calculationData.recipientCity}
-                    className="form-control"
-                    placeholder="To *"
-                    name="recipientCity"
-                    onChange={handleChange}
+                  <LocationInput
+                    placeholder="Select To"
+                    onSelect={handleSelectTo}
                   />
                 </div>
                 <div className="form-check">
                   <input
                     className="form-check-input"
                     type="checkbox"
-                    name="residential" // Added name
-                    checked={calculationData.residential} // Changed to checked
+                    name="residential"
+                    checked={calculationData.residential}
                     onChange={handleChange}
                   />
                   <label className="form-check-label" htmlFor="residential">
@@ -298,6 +394,27 @@ const RateAndTransitTime = () => {
                   >
                     {loading ? "Loading..." : "Show Rate"}
                   </button>
+                </div>
+              </div>
+              <div>
+                <div className="mt-3 ">
+                  {result?.map((item, index) => (
+                    <div
+                      key={`item-${index}`}
+                      className="d-flex border p-2 rounded justify-content-between align-items-center"
+                    >
+                      <div>{item?.data?.[0]?.serviceName || "N/A"}</div>
+                      <div>
+                        {item?.data?.[0]?.ratedShipmentDetails?.map(
+                          (price, priceIndex) => (
+                            <span key={`price-detail-${index}-${priceIndex}`}>
+                              {`$${price?.totalNetFedExCharge || "0.00"} `}
+                            </span>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

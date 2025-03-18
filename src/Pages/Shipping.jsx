@@ -69,7 +69,7 @@ function Shipping() {
 
   const [ShipmentData, setShipmentData] = useState({
     userId: user?.userid,
-    recipientsPersonName: "meet",
+    recipientsPersonName: "Olivia Brown",
     recipientsPhoneNumber: "7897987899",
     recipientsEmail: "meet@gmail.com",
     recipientsCountry: "US",
@@ -91,17 +91,17 @@ function Shipping() {
     senderIsSave: false,
     paymentType: "SENDER",
     serviceType: "FEDEX_2_DAY",
-    packagingType: "YOUR_PACKAGING",
-    pickupType: "DROPOFF_AT_FEDEX_LOCATION",
+    packagingType: "FEDEX_BOX",
+    pickupType: "USE_SCHEDULED_PICKUP",
     packages: [
       {
-        packagesNo: "1",
+        packagesNo: "8",
         weight: "10",
-        weightUnit: "KG",
+        weightUnit: "LB",
         length: "10",
-        width: "10",
-        height: "10",
-        units: "CM",
+        width: "8",
+        height: "6",
+        units: "IN",
       },
     ],
   });
@@ -209,51 +209,77 @@ function Shipping() {
   const handleShipment = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(
-        "https://fedex-backend-1.onrender.com/api/fedex/shipment/",
-        {
-          userId: "456789",
-          personName: ShipmentData.senderPersonName,
-          phoneNumber: ShipmentData.senderPhoneNumber,
-          address: ShipmentData.senderAddress,
-          city: ShipmentData.senderCity,
-          postalCode: ShipmentData.senderPostalCode,
-          email: ShipmentData.senderEmail,
-          countryCode: ShipmentData.senderCountry,
-          stateOrProvinceCode: ShipmentData.senderStateOrProvinceCode,
-          residential: JSON.stringify(ShipmentData.senderIsResidential),
-          recipientsPersonName: ShipmentData.recipientsPersonName,
-          recipientsPhoneNumber: ShipmentData.recipientsPhoneNumber,
-          recipientsAddress: ShipmentData.recipientsAddress,
-          recipientsCity: ShipmentData.recipientsCity,
-          recipientsPostalCode: ShipmentData.recipientsPostalCode,
-          recipientsEmail: ShipmentData.recipientsEmail,
-          recipientsCountryCode: ShipmentData.recipientsCountry,
-          recipientsStateOrProvinceCode:
-            ShipmentData.recipientsStateOrProvinceCode,
-          recipientsResidential: JSON.stringify(
-            ShipmentData.recipientsIsResidential
-          ),
-          pickupType: ShipmentData.pickupType,
-          serviceType: ShipmentData.serviceType,
-          packagingType: ShipmentData.packagingType,
-          paymentType: ShipmentData.paymentType,
-          totalWeight: ShipmentData.packages.weight,
-          packages: ShipmentData.packages.map((pkg) => ({
-            weightValue: pkg.weight,
-            weightUnits: pkg.weightUnit,
-            length: pkg.length,
-            width: pkg.width,
-            height: pkg.height,
-            units: pkg.units,
-          })),
+
+      const serviceTypes = [
+        "INTERNATIONAL_FIRST",
+        "FEDEX_INTERNATIONAL_PRIORITY_EXPRESS",
+        "INTERNATIONAL_ECONOMY",
+        "FEDEX_2_DAY",
+        "FEDEX_2_DAY_AM",
+        "FEDEX_EXPRESS_SAVER",
+      ];
+
+      let results = [];
+
+      for (const serviceType of serviceTypes) {
+        try {
+          const response = await axios.post(
+            "https://fedex-backend-1.onrender.com/api/fedex/shipment/",
+            {
+              userId: "456789",
+              personName: ShipmentData.senderPersonName,
+              phoneNumber: ShipmentData.senderPhoneNumber,
+              address: ShipmentData.senderAddress,
+              city: ShipmentData.senderCity,
+              postalCode: ShipmentData.senderPostalCode,
+              email: ShipmentData.senderEmail,
+              countryCode: ShipmentData.senderCountry,
+              stateOrProvinceCode: ShipmentData.senderStateOrProvinceCode,
+              residential: JSON.stringify(ShipmentData.senderIsResidential),
+              recipientsPersonName: ShipmentData.recipientsPersonName,
+              recipientsPhoneNumber: ShipmentData.recipientsPhoneNumber,
+              recipientsAddress: ShipmentData.recipientsAddress,
+              recipientsCity: ShipmentData.recipientsCity,
+              recipientsPostalCode: ShipmentData.recipientsPostalCode,
+              recipientsEmail: ShipmentData.recipientsEmail,
+              recipientsCountryCode: ShipmentData.recipientsCountry,
+              recipientsStateOrProvinceCode:
+                ShipmentData.recipientsStateOrProvinceCode,
+              recipientsResidential: JSON.stringify(
+                ShipmentData.recipientsIsResidential
+              ),
+              pickupType: ShipmentData.pickupType,
+              serviceType: serviceType, // Use the iterated service type
+              packagingType: ShipmentData.packagingType,
+              paymentType: ShipmentData.paymentType,
+              totalWeight: ShipmentData.packages.weight,
+              packages: ShipmentData.packages.map((pkg) => ({
+                weightValue: pkg.weight,
+                weightUnits: pkg.weightUnit,
+                length: pkg.length,
+                width: pkg.width,
+                height: pkg.height,
+                units: pkg.units,
+              })),
+            }
+          );
+
+          console.log(`Response for ${serviceType}:`, response.data);
+          results.push({
+            data: response.data || null, // Store the full response data
+          });
+        } catch (error) {
+          console.error(`Error fetching data for ${serviceType}:`, error);
+          results.push({
+            data: null,
+          });
         }
-      );
-      console.log(response.data);
-      setResultData(response.data);
-      setLoading(false);
+      }
+
+      setResultData(results);
     } catch (error) {
-      console.error(error);
+      console.error("Unexpected error:", error);
+      setResultData(null); // Reset on unexpected error
     } finally {
       setLoading(false);
     }
@@ -270,6 +296,8 @@ function Shipping() {
   const prevSection = () => {
     setCurrentSection((prev) => (prev > 1 ? prev - 1 : prev));
   };
+
+  console.log(resultData);
 
   return (
     <>
@@ -800,25 +828,34 @@ function Shipping() {
                     {loading ? (
                       <div>loading....</div>
                     ) : (
-                      <div className="my-3 d-flex justify-content-between border p-3">
-                        <div>
-                          {resultData?.data?.transactionShipments?.[0]
-                            ?.pieceResponses?.[0]?.deliveryDatestamp
-                            ? format(
-                                new Date(
-                                  resultData.data.transactionShipments[0].pieceResponses[0].deliveryDatestamp
-                                ),
-                                "MMMM dd, yyyy hh:mm a"
-                              )
-                            : "N/A"}
-                        </div>
-                        <div>
-                          $
-                          {resultData?.data?.transactionShipments?.[0]
-                            ?.completedShipmentDetail?.shipmentRating
-                            ?.shipmentRateDetails?.[0]?.totalNetFedExCharge ??
-                            "0"}
-                        </div>
+                      <div>
+                        {resultData?.map((item, index) => {
+                          const deliveryDatestamp =
+                            item?.data?.data?.transactionShipments?.[0]
+                              ?.pieceResponses?.[0]?.deliveryDatestamp;
+                          const totalCharge =
+                            item?.data?.data?.transactionShipments?.[0]
+                              ?.pieceResponses?.[0]?.baseRateAmount;
+                          return (
+                            <div>
+                              {item?.data?.data && (
+                                <div
+                                  key={index}
+                                  className="my-3 d-flex justify-content-between border p-3"
+                                >
+                                  <div>
+                                    {deliveryDatestamp &&
+                                      format(
+                                        new Date(deliveryDatestamp),
+                                        "MMMM dd, yyyy hh:mm a"
+                                      )}
+                                  </div>
+                                  <div>${totalCharge ?? "0.00"}</div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
