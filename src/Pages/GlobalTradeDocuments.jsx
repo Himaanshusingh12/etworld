@@ -36,7 +36,7 @@ const GlobalTradeDocuments = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `http://localhost:3000/api/fedex/global-trade`,
+        `https://fedex-backend-1.onrender.com/api/fedex/global-trade`,
         globalDocuments
       );
       setResult(response.data.data);
@@ -56,67 +56,70 @@ const GlobalTradeDocuments = () => {
         </div>
         <div className="container mt-4">
           <div className="row">
-            <h5 className="fw-bold text-primary">
-              <i className="fa fa-user-circle"></i> Global Trade Documents
-            </h5>
-            <h6>Sender Country *</h6>
-            <div className="mb-2">
-              <Select
-                options={countryOptions}
-                placeholder="Select Country/Territory"
-                value={countryOptions.find(
-                  (option) => option.value === globalDocuments.countryCode
-                )}
-                onChange={(option) =>
-                  setGlobalDocuments({
-                    ...globalDocuments,
-                    countryCode: option.value,
-                  })
-                }
-              />
-            </div>
-            <h6>Recipient Country *</h6>
-            <div className="mb-2">
-              <Select
-                options={countryOptions}
-                placeholder="Select Country/Territory"
-                value={countryOptions.find(
-                  (option) => option.value === globalDocuments.recipientsCountry
-                )}
-                onChange={(option) =>
-                  setGlobalDocuments({
-                    ...globalDocuments,
-                    recipientsCountry: option.value,
-                  })
-                }
-              />
-            </div>
-            <h6>Service Type *</h6>
-            <div className="mb-2">
-              <Select
-                options={serviceOptions}
-                placeholder="Select Service Type"
-                value={serviceOptions.find(
-                  (option) => option.value === globalDocuments.carrierCode
-                )}
-                onChange={(option) =>
-                  setGlobalDocuments({
-                    ...globalDocuments,
-                    carrierCode: option.value,
-                  })
-                }
-              />
-            </div>
+            <div className="col-md-8 ps-5">
+              <h5 className="fw-bold text-primary">
+                <i className="fa fa-user-circle"></i> Global Trade Documents
+              </h5>
+              <h6>Sender Country *</h6>
+              <div className="mb-2">
+                <Select
+                  options={countryOptions}
+                  placeholder="Select Country/Territory"
+                  value={countryOptions.find(
+                    (option) => option.value === globalDocuments.countryCode
+                  )}
+                  onChange={(option) =>
+                    setGlobalDocuments({
+                      ...globalDocuments,
+                      countryCode: option.value,
+                    })
+                  }
+                />
+              </div>
+              <h6>Recipient Country *</h6>
+              <div className="mb-2">
+                <Select
+                  options={countryOptions}
+                  placeholder="Select Country/Territory"
+                  value={countryOptions.find(
+                    (option) =>
+                      option.value === globalDocuments.recipientsCountry
+                  )}
+                  onChange={(option) =>
+                    setGlobalDocuments({
+                      ...globalDocuments,
+                      recipientsCountry: option.value,
+                    })
+                  }
+                />
+              </div>
+              <h6>Service Type *</h6>
+              <div className="mb-2">
+                <Select
+                  options={serviceOptions}
+                  placeholder="Select Service Type"
+                  value={serviceOptions.find(
+                    (option) => option.value === globalDocuments.carrierCode
+                  )}
+                  onChange={(option) =>
+                    setGlobalDocuments({
+                      ...globalDocuments,
+                      carrierCode: option.value,
+                    })
+                  }
+                />
+              </div>
 
-            <div className="d-flex gap-3 my-2">
-              <button
-                type="button"
-                onClick={handleClick}
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? "Loading..." : "Show Documents"}
-              </button>
+              <div className="d-flex gap-3 my-2">
+                <button
+                  type="button"
+                  onClick={handleClick}
+                  className="btn btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : "Show Documents"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

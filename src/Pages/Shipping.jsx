@@ -210,7 +210,7 @@ function Shipping() {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:3000/api/fedex/shipment/",
+        "https://fedex-backend-1.onrender.com/api/fedex/shipment/",
         {
           userId: "456789",
           personName: ShipmentData.senderPersonName,
