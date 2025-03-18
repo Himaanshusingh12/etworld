@@ -5,6 +5,7 @@ import Select from "react-select";
 import PhoneInput from "react-phone-input-2";
 import { City, Country, State } from "country-state-city";
 import axios from "axios";
+import { format } from "date-fns";
 
 const OpenShipment = () => {
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,6 @@ const OpenShipment = () => {
       }))
     : [];
 
-
   const cityOptions =
     selectedCountry?.value && selectedState?.value
       ? City.getCitiesOfState(selectedCountry.value, selectedState.value).map(
@@ -40,29 +40,29 @@ const OpenShipment = () => {
 
   const [openShipment, setOpenShipment] = useState({
     userId: user?.userid,
-    personName: "",
-    phoneNumber: "",
-    address: "",
-    city: "",
-    stateOrProvinceCode: "",
-    email: "",
-    postalCode: "",
-    countryCode: "",
-    recipientsPersonName: "",
-    recipientsPhoneNumber: "",
-    recipientsAddress: "",
-    recipientsEmail: "",
-    recipientsCity: "",
-    recipientsStateOrProvinceCode: "",
-    recipientsPostalCode: "",
-    recipientsCountryCode: "",
+    personName: "Priya Patel",
+    phoneNumber: "+919876543210",
+    address: "456 Pine Street",
+    city: "San Francisco",
+    stateOrProvinceCode: "CA",
+    email: "priya.patel@gmail.com",
+    postalCode: "94107",
+    countryCode: "US",
+    recipientsPersonName: "Liam Johnson",
+    recipientsPhoneNumber: "+919876543210",
+    recipientsAddress: "321 Maple Drive",
+    recipientsEmail: "liam.johnson@gmail.com",
+    recipientsCity: "New York",
+    recipientsStateOrProvinceCode: "NY",
+    recipientsPostalCode: "10001",
+    recipientsCountryCode: "US",
     pickupType: "DROPOFF_AT_FEDEX_LOCATION",
     packagingType: "FEDEX_BOX",
     serviceType: "FEDEX_2_DAY",
     weightUnits: "LB",
-    weightValue: "",
+    weightValue: "2.3",
     packages: [
-      { packagesNo: "1", length: "", width: "", height: "", units: "IN" },
+      { packagesNo: "1", length: "12", width: "8", height: "6", units: "IN" },
     ],
   });
 
@@ -185,15 +185,44 @@ const OpenShipment = () => {
   const handleShipment = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(
-        "https://fedex-backend-1.onrender.com/api/fedex/openShipment",
-        openShipment
-      );
-      console.log(response.data);
-      setResultData(response.data);
-      setLoading(false);
+
+      const serviceTypes = [
+        "FEDEX_GROUND",
+        "FEDEX_2_DAY",
+        "FEDEX_2_DAY_AM",
+        "FEDEX_EXPRESS_SAVER",
+      ];
+
+      let results = [];
+
+      for (const serviceType of serviceTypes) {
+        try {
+          const response = await axios.post(
+            "https://fedex-backend-1.onrender.com/api/fedex/openShipment",
+            {
+              ...openShipment,
+              serviceType,
+            }
+          );
+
+          results.push({
+            data: response.data?.data?.transactionShipments || null,
+          });
+        } catch (error) {
+          console.error(`Error fetching data for ${serviceType}:`, error);
+          results.push({
+            serviceType,
+            data: null, // No data on error
+            error: error.message, // Error message
+          });
+        }
+      }
+
+      // Set resultData once after the loop completes
+      setResultData(results);
     } catch (error) {
-      console.error(error);
+      console.error("Unexpected error:", error);
+      setResultData(null); // Reset to null on unexpected error
     } finally {
       setLoading(false);
     }
@@ -211,7 +240,7 @@ const OpenShipment = () => {
     setCurrentSection((prev) => (prev > 1 ? prev - 1 : prev));
   };
 
-  console.log(openShipment);
+  console.log(resultData);
 
   return (
     <>
@@ -417,7 +446,7 @@ const OpenShipment = () => {
 
               {currentSection === 2 && (
                 <div>
-                  <div className="mb-2">
+                  {/* <div className="mb-2">
                     <label className="form-label fw-bold">PickUp *</label>
                     <Select
                       options={PickupOptions}
@@ -428,7 +457,7 @@ const OpenShipment = () => {
                       name="pickupType"
                       placeholder="Select PickUp"
                     />
-                  </div>
+                  </div> */}
 
                   <div className="mb-2">
                     <label className="form-label fw-bold">Service *</label>
@@ -581,6 +610,35 @@ const OpenShipment = () => {
                   </div>
                 </div>
               )}
+
+              {currentSection === 3 && (
+                <div>
+                  {resultData?.map((item, index) => (
+                    <div
+                      key={index}
+                      className="mb-2 d-flex border p-2 rounded justify-content-between align-items-center"
+                    >
+                      <div>
+                        <div>
+                          {item?.data[0]?.shipDatestamp &&
+                            format(
+                              new Date(item.data[0].shipDatestamp),
+                              "MMMM dd, yyyy hh:mm a"
+                            )}
+                        </div>
+                        <div>{item?.data[0]?.serviceName}</div>
+                      </div>
+                      <div>
+                        $
+                        {item?.data[0]?.pieceResponses
+                          ?.map((data) => data?.netChargeAmount)
+                          .join(", ")}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <button className="btn btn-primary w-100" onClick={nextSection}>
                 Next
               </button>
