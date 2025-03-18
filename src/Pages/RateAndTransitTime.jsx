@@ -53,18 +53,17 @@ const RateAndTransitTime = () => {
       setLoading(true);
 
       const serviceTypes = [
-        "FEDEX_INTERNATIONAL_PRIORITY",
-        "FEDEX_INTERNATIONAL_PRIORITY_EXPRESS",
-        "INTERNATIONAL_CONNECT_PLUS",
-        "INTERNATIONAL_ECONOMY",
         "FEDEX_GROUND",
+        "FEDEX_2_DAY",
+        "FEDEX_2_DAY_AM",
+        "FEDEX_EXPRESS_SAVER",
       ];
 
       let results = [];
 
       for (const serviceType of serviceTypes) {
         const response = await axios.post(
-          "http://localhost:3000/api/fedex/rate-transit",
+          "https://fedex-backend-1.onrender.com/api/fedex/rate-transit",
           {
             ...calculationData,
             serviceType,
@@ -74,7 +73,7 @@ const RateAndTransitTime = () => {
         console.log(`Response for ${serviceType}:`, response.data);
 
         results.push({ serviceType, data: response.data });
-        setResultData([...results]); // Update state with new data
+        setResultData([...results]);
       }
     } catch (error) {
       console.error(error);

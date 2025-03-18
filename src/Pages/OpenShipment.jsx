@@ -25,6 +25,7 @@ const OpenShipment = () => {
       }))
     : [];
 
+
   const cityOptions =
     selectedCountry?.value && selectedState?.value
       ? City.getCitiesOfState(selectedCountry.value, selectedState.value).map(
@@ -39,30 +40,29 @@ const OpenShipment = () => {
 
   const [openShipment, setOpenShipment] = useState({
     userId: user?.userid,
-    personName: "Aarav Sharma",
-    phoneNumber: "312-555-7890",
-    address: "789 Oak Avenue",
+    personName: "",
+    phoneNumber: "",
+    address: "",
     city: "",
     stateOrProvinceCode: "",
-    email: "meet@gmail.com",
-    postalCode: "38655",
+    email: "",
+    postalCode: "",
     countryCode: "",
-    recipientsPersonName: "Sofia Rivera",
-    recipientsPhoneNumber: "305-444-1234",
-    recipientsAddress: "101 Palm Boulevard",
-    recipientsEmail: "meet@gmail.com",
+    recipientsPersonName: "",
+    recipientsPhoneNumber: "",
+    recipientsAddress: "",
+    recipientsEmail: "",
     recipientsCity: "",
     recipientsStateOrProvinceCode: "",
-    recipientsPostalCode: "38655",
+    recipientsPostalCode: "",
     recipientsCountryCode: "",
     pickupType: "DROPOFF_AT_FEDEX_LOCATION",
     packagingType: "FEDEX_BOX",
     serviceType: "FEDEX_2_DAY",
-    paymentType: "RECIPIENT",
     weightUnits: "LB",
-    weightValue: "15.5",
+    weightValue: "",
     packages: [
-      { packagesNo: "1", length: "18", width: "8", height: "8", units: "IN" },
+      { packagesNo: "1", length: "", width: "", height: "", units: "IN" },
     ],
   });
 
@@ -97,18 +97,34 @@ const OpenShipment = () => {
 
   const handleChange = (e, index) => {
     const { name, value, type, checked } = e.target;
-    setOpenShipment((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSelectChange = (event) => {
-    const { name, value } = event.target;
-    setOpenShipment((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (
+      [
+        "packagesNo",
+        "weight",
+        "length",
+        "width",
+        "height",
+        "weightUnit",
+        "units",
+      ].includes(name)
+    ) {
+      setOpenShipment((prev) => ({
+        ...prev,
+        packages: prev.packages.map((pkg, i) =>
+          i === index
+            ? {
+                ...pkg,
+                [name]: type === "checkbox" ? checked : value,
+              }
+            : pkg
+        ),
+      }));
+    } else {
+      setOpenShipment((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
   };
 
   const updateShipmentField = (fieldName) => (selectedOption) => {
@@ -117,9 +133,9 @@ const OpenShipment = () => {
       [fieldName]: selectedOption?.value ?? "",
     }));
 
-    if (fieldName.includes("Country")) {
+    if (fieldName.includes("country")) {
       setSelectedCountry(selectedOption);
-    } else if (fieldName.includes("State")) {
+    } else if (fieldName.includes("state")) {
       setSelectedState(selectedOption);
     }
   };
@@ -127,15 +143,13 @@ const OpenShipment = () => {
   const handleRecipientsCountryChange = updateShipmentField(
     "recipientsCountryCode"
   );
-  const handleSenderCountryChange = updateShipmentField("senderCountryCode");
+  const handleSenderCountryChange = updateShipmentField("countryCode");
   const handleCityChange = updateShipmentField("recipientsCity");
-  const handleSenderCityChange = updateShipmentField("senderCity");
+  const handleSenderCityChange = updateShipmentField("city");
   const handleSelectState = updateShipmentField(
     "recipientsStateOrProvinceCode"
   );
-  const handleSenderStateChange = updateShipmentField(
-    "senderStateOrProvinceCode"
-  );
+  const handleSenderStateChange = updateShipmentField("stateOrProvinceCode");
 
   const PackagingOptions = [
     { label: "Your Packaging", value: "YOUR_PACKAGING" },
@@ -172,7 +186,8 @@ const OpenShipment = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:3000/api/fedex/shipment/"
+        "https://fedex-backend-1.onrender.com/api/fedex/openShipment",
+        openShipment
       );
       console.log(response.data);
       setResultData(response.data);
@@ -227,8 +242,7 @@ const OpenShipment = () => {
                     </div>
                     <div className="mb-2">
                       <PhoneInput
-                        country={openShipment.recipientsPhoneNumber?.toLowerCase()}
-                        inputClass="form-control"
+                        country={openShipment.recipientsCountryCode?.toLowerCase()}
                         value={openShipment.recipientsPhoneNumber}
                         onChange={(value) =>
                           setOpenShipment((prev) => ({
@@ -236,7 +250,7 @@ const OpenShipment = () => {
                             recipientsPhoneNumber: value,
                           }))
                         }
-                        name="recipientsPhoneNumber"
+                        inputClass="form-control"
                       />
                     </div>
                     <div className="mb-2">
@@ -323,7 +337,7 @@ const OpenShipment = () => {
                     </div>
                     <div className="mb-2">
                       <PhoneInput
-                        inputClass="form-control"
+                        country={openShipment.countryCode?.toLowerCase()}
                         value={openShipment.phoneNumber}
                         onChange={(value) =>
                           setOpenShipment((prev) => ({
@@ -331,7 +345,8 @@ const OpenShipment = () => {
                             phoneNumber: value,
                           }))
                         }
-                        name="senderPhoneNumber"
+                        name="phoneNumber"
+                        inputClass="form-control"
                       />
                     </div>
                     <div className="mb-2">
@@ -379,7 +394,7 @@ const OpenShipment = () => {
                       <Select
                         options={stateOptions}
                         placeholder="Select State"
-                        value={stateOptions.find(
+                        value={countryOptions.find(
                           (option) =>
                             option.value === openShipment.stateOrProvinceCode
                         )}
@@ -390,8 +405,8 @@ const OpenShipment = () => {
                       <Select
                         options={cityOptions}
                         placeholder="Select City *"
-                        value={cityOptions.find(
-                          (option) => option.value === openShipment.city
+                        value={countryOptions.find(
+                          (option) => option.value === openShipment.senderCity
                         )}
                         onChange={handleSenderCityChange}
                       />
@@ -409,7 +424,7 @@ const OpenShipment = () => {
                       value={PickupOptions.find(
                         (option) => option.value === openShipment.pickupType
                       )}
-                      onChange={handleSelectChange}
+                      onChange={updateShipmentField("pickupType")}
                       name="pickupType"
                       placeholder="Select PickUp"
                     />
@@ -422,7 +437,7 @@ const OpenShipment = () => {
                       value={ServiceOptions.find(
                         (option) => option.value === openShipment.serviceType
                       )}
-                      onChange={handleSelectChange}
+                      onChange={updateShipmentField("serviceType")}
                       name="serviceType"
                       placeholder="Select Service"
                     />
@@ -435,7 +450,7 @@ const OpenShipment = () => {
                       value={PackagingOptions.find(
                         (option) => option.value === openShipment.packagingType
                       )}
-                      onChange={handleSelectChange}
+                      onChange={updateShipmentField("packagingType")}
                       name="packagingType"
                       placeholder="Select Packaging"
                     />
@@ -459,6 +474,18 @@ const OpenShipment = () => {
                   <div>
                     {openShipment.packages.map((pkg, index) => (
                       <div key={index} className="row align-items-end g-2 mb-3">
+                        <div className="col-md-2">
+                          <label className="form-label fw-bold">
+                            {index === 0 ? "Packages *" : ""}
+                          </label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={pkg.packagesNo}
+                            name="packagesNo"
+                            onChange={(e) => handleChange(e, index)}
+                          />
+                        </div>
                         <div className="col-md-3">
                           <label className="form-label fw-bold">Weight *</label>
                           <div className="input-group">

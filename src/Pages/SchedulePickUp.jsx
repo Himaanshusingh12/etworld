@@ -221,7 +221,7 @@ const SchedulePickUp = () => {
         ...schedulePickUp,
       };
       const response = await axios.post(
-        "http://localhost:3000/api/fedex/pickUp/",
+        "https://fedex-backend-1.onrender.com/api/fedex/pickUp/",
         payload
       );
       setResultData(response.data);
