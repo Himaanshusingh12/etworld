@@ -37,7 +37,33 @@ const UploadDocuments = () => {
     });
   };
 
+  const [errors, setErrors] = useState({});
+  const validateForm = () => {
+    let tempErrors = {};
+    if (!formData.file) {
+      tempErrors.file = "Please upload a file";
+    }
+    if (!formData.fileName) {
+      tempErrors.fileName = "File name is required";
+    }
+    if (!formData.workflowName) {
+      tempErrors.workflowName = "ETD Shipment is required";
+    }
+    if (!formData.shipDocumentType) {
+      tempErrors.shipDocumentType = "Please select a document type";
+    }
+    if (!formData.originCountry) {
+      tempErrors.originCountry = "Please select an origin country";
+    }
+    if (!formData.destinationCountry) {
+      tempErrors.destinationCountry = "Please select a destination country";
+    }
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) return;
     try {
       const data = new FormData();
       data.append("file", formData.file);
@@ -142,6 +168,9 @@ const UploadDocuments = () => {
                     name="file"
                     onChange={handleFileChange}
                   />
+                  {errors.file && (
+                    <div className="text-danger">{errors.file}</div>
+                  )}
                 </div>
                 <div className="mb-2">
                   <input
@@ -152,6 +181,9 @@ const UploadDocuments = () => {
                       handleInputChange("fileName", e.target.value)
                     }
                   />
+                  {errors.fileName && (
+                    <div className="text-danger">{errors.fileName}</div>
+                  )}
                 </div>
                 <div className="mb-2">
                   <Select
@@ -162,6 +194,9 @@ const UploadDocuments = () => {
                     )}
                     onChange={handleSelectChange("workflowName")}
                   />
+                  {errors.workflowName && (
+                    <div className="text-danger">{errors.workflowName}</div>
+                  )}
                 </div>
                 <div className="mb-2">
                   <Select
@@ -172,6 +207,9 @@ const UploadDocuments = () => {
                     )}
                     onChange={handleSelectChange("shipDocumentType")}
                   />
+                  {errors.shipDocumentType && (
+                    <div className="text-danger">{errors.shipDocumentType}</div>
+                  )}
                 </div>
                 <div className="mb-2">
                   <Select
@@ -182,6 +220,9 @@ const UploadDocuments = () => {
                     )}
                     onChange={handleSelectChange("originCountry")}
                   />
+                  {errors.originCountry && (
+                    <div className="text-danger">{errors.originCountry}</div>
+                  )}
                 </div>
                 <div className="mb-2">
                   <Select
@@ -192,11 +233,16 @@ const UploadDocuments = () => {
                     )}
                     onChange={handleSelectChange("destinationCountry")}
                   />
+                  {errors.destinationCountry && (
+                    <div className="text-danger">
+                      {errors.destinationCountry}
+                    </div>
+                  )}
                 </div>
                 <div className="d-flex gap-3 my-2">
                   <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn btn-primary w-100"
                     onClick={handleSubmit}
                   >
                     Upload

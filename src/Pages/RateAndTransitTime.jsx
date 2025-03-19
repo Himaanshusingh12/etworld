@@ -90,12 +90,12 @@ const RateAndTransitTime = () => {
 
   const [calculationData, setCalculationData] = useState({
     user: user?.userid,
-    senderCity: "Chicago",
-    senderPostalCode: "60601",
-    senderCountryCode: "US",
-    recipientCity: "Houston",
-    recipientPostalCode: "77001",
-    recipientCountryCode: "US",
+    senderCity: "",
+    senderPostalCode: "",
+    senderCountryCode: "",
+    recipientCity: "",
+    recipientPostalCode: "",
+    recipientCountryCode: "",
     pickupType: "DROPOFF_AT_FEDEX_LOCATION",
     serviceType: "FEDEX_GROUND",
     packagingType: "YOUR_PACKAGING",
@@ -110,38 +110,85 @@ const RateAndTransitTime = () => {
     dimensionUnits: "IN",
   });
 
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!calculationData.senderCity) {
+      newErrors.senderCity = "Sender city is required";
+    }
+    if (!calculationData.senderPostalCode) {
+      newErrors.senderPostalCode = "Sender postal code is required";
+    }
+    if (!calculationData.recipientCity) {
+      newErrors.recipientCity = "Recipient city is required";
+    }
+    if (!calculationData.recipientPostalCode) {
+      newErrors.recipientPostalCode = "Recipient postal code is required";
+    }
+    if (calculationData.packagesNo < 1) {
+      newErrors.packagesNo = "Number of packages must be at least 1";
+    }
+    if (!calculationData.packagesNo) {
+      newErrors.packagesNo = "packages No is required";
+    }
+    if (!calculationData.weightValue) {
+      newErrors.weightValue = "Weight is required";
+    }
+    if (!calculationData.length) {
+      newErrors.length = "Length is required";
+    }
+    if (!calculationData.width) {
+      newErrors.width = "Width is required";
+    }
+    if (!calculationData.height) {
+      newErrors.height = "Height is required";
+    }
+    if (!calculationData.shipDateTime) {
+      newErrors.shipDateTime = "Shipping date is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setCalculationData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
     }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
-  // Handle Select component changes
   const handleSelectChange = (selectedOption, { name }) => {
     setCalculationData((prevData) => ({
       ...prevData,
       [name]: selectedOption ? selectedOption.value : null,
     }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   const [result, setResultData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleShowRate = async () => {
+    if (!validateForm()) {
+      return;
+    }
     try {
       setLoading(true);
-
       const serviceTypes = [
         "FEDEX_GROUND",
         "FEDEX_2_DAY",
         "FEDEX_2_DAY_AM",
         "FEDEX_EXPRESS_SAVER",
       ];
-
       let results = [];
-
       for (const serviceType of serviceTypes) {
         try {
           const response = await axios.post(
@@ -151,16 +198,13 @@ const RateAndTransitTime = () => {
               serviceType,
             }
           );
-
-          console.log(`Response for ${serviceType}:`, response.data);
           results.push({ data: response?.data?.data });
         } catch (error) {
           console.error(`Error fetching data for ${serviceType}:`, error);
           results.push({ serviceType, error: error.message });
         }
-
-        setResultData([...results]);
       }
+      setResultData([...results]);
     } catch (error) {
       console.error("Unexpected error:", error);
     } finally {
@@ -209,6 +253,11 @@ const RateAndTransitTime = () => {
       senderPostalCode: data.zip,
       senderCountryCode: data.country,
     }));
+    setErrors((prev) => ({
+      ...prev,
+      senderCity: "",
+      senderPostalCode: "",
+    }));
   };
 
   const handleSelectTo = (data) => {
@@ -218,9 +267,14 @@ const RateAndTransitTime = () => {
       recipientPostalCode: data.zip,
       recipientCountryCode: data.country,
     }));
+    setErrors((prev) => ({
+      ...prev,
+      recipientCity: "",
+      recipientPostalCode: "",
+    }));
   };
 
-  console.log(result);
+  console.log(errors);
 
   return (
     <>
@@ -243,6 +297,11 @@ const RateAndTransitTime = () => {
                     placeholder="Select From"
                     onSelect={handleSelectFrom}
                   />
+                  {(errors.senderCity || errors.senderPostalCode) && (
+                    <div className="text-danger">
+                      {errors.senderCity || errors.senderPostalCode}
+                    </div>
+                  )}
                 </div>
                 <h6>To *</h6>
                 <div className="mb-2">
@@ -250,6 +309,11 @@ const RateAndTransitTime = () => {
                     placeholder="Select To"
                     onSelect={handleSelectTo}
                   />
+                  {(errors.recipientCity || errors.recipientPostalCode) && (
+                    <div className="text-danger">
+                      {errors.recipientCity || errors.recipientPostalCode}
+                    </div>
+                  )}
                 </div>
                 <div className="form-check">
                   <input
@@ -286,6 +350,9 @@ const RateAndTransitTime = () => {
                     )}
                     onChange={handleSelectChange}
                   />
+                  {errors.shipDateTime && (
+                    <div className="text-danger">{errors.shipDateTime}</div>
+                  )}
                 </div>
                 <div className="form-check">
                   <input className="form-check-input" type="checkbox" />
@@ -308,9 +375,11 @@ const RateAndTransitTime = () => {
                         name="packagesNo"
                         onChange={handleChange}
                       />
+                      {errors.packagesNo && (
+                        <div className="text-danger">{errors.packagesNo}</div>
+                      )}
                     </div>
 
-                    {/* Weight */}
                     <div className="col-md-3">
                       <label className="form-label fw-bold">Weight *</label>
                       <div className="input-group">
@@ -332,9 +401,11 @@ const RateAndTransitTime = () => {
                           <option value="LB">lbs</option>
                         </select>
                       </div>
+                      {errors.weightValue && (
+                        <div className="text-danger">{errors.weightValue}</div>
+                      )}
                     </div>
 
-                    {/* Dimensions */}
                     <div className="col-md-5">
                       <label className="form-label fw-bold">
                         Dimensions (L × W × H)
@@ -367,9 +438,13 @@ const RateAndTransitTime = () => {
                           onChange={handleChange}
                         />
                       </div>
+                      {(errors.length || errors.width || errors.height) && (
+                        <div className="text-danger">
+                          {errors.length || errors.width || errors.height}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Dimension Unit */}
                     <div className="col-md-2">
                       <label className="form-label fw-bold">Unit</label>
                       <select
@@ -389,7 +464,7 @@ const RateAndTransitTime = () => {
                   <button
                     type="button"
                     onClick={handleShowRate}
-                    className="btn btn-primary"
+                    className="btn btn-primary w-100"
                     disabled={loading}
                   >
                     {loading ? "Loading..." : "Show Rate"}
@@ -397,7 +472,7 @@ const RateAndTransitTime = () => {
                 </div>
               </div>
               <div>
-                <div className="mt-3 ">
+                <div className="mt-3">
                   {result?.map((item, index) => (
                     <div
                       key={`item-${index}`}

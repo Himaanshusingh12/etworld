@@ -40,9 +40,34 @@ const UploadMultipleDocuments = () => {
     }
   };
 
+  const [errors, setErrors] = useState({});
+  const validateForm = () => {
+    let tempErrors = {};
+    if (!formData.files.length < 0) {
+      tempErrors.files = "Please upload a file";
+    }
+    if (!formData.fileName) {
+      tempErrors.fileName = "File name is required";
+    }
+    if (!formData.workflowName) {
+      tempErrors.workflowName = "ETD Shipment is required";
+    }
+    if (!formData.shipDocumentType) {
+      tempErrors.shipDocumentType = "Please select a document type";
+    }
+    if (!formData.originCountry) {
+      tempErrors.originCountry = "Please select an origin country";
+    }
+    if (!formData.destinationCountry) {
+      tempErrors.destinationCountry = "Please select a destination country";
+    }
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!validateForm()) return;
     try {
       const data = new FormData();
 
@@ -126,6 +151,9 @@ const UploadMultipleDocuments = () => {
                     multiple
                     onChange={handleFileChange}
                   />
+                  {errors.files && (
+                    <div className="text-danger">{errors.files}</div>
+                  )}
                 </div>
                 <div className="mb-2">
                   <input
@@ -140,6 +168,9 @@ const UploadMultipleDocuments = () => {
                       })
                     }
                   />
+                  {errors.workflowName && (
+                    <div className="text-danger">{errors.workflowName}</div>
+                  )}
                 </div>
                 <div className="mb-2">
                   <Select
@@ -150,6 +181,9 @@ const UploadMultipleDocuments = () => {
                     )}
                     onChange={handleSelectChange("shipDocumentType")}
                   />
+                  {errors.shipDocumentType && (
+                    <div className="text-danger">{errors.shipDocumentType}</div>
+                  )}
                 </div>
                 <div className="mb-2">
                   <Select
@@ -160,6 +194,9 @@ const UploadMultipleDocuments = () => {
                     )}
                     onChange={handleSelectChange("originCountry")}
                   />
+                  {errors.originCountry && (
+                    <div className="text-danger">{errors.originCountry}</div>
+                  )}
                 </div>
                 <div className="mb-2">
                   <Select
@@ -170,9 +207,14 @@ const UploadMultipleDocuments = () => {
                     )}
                     onChange={handleSelectChange("destinationCountry")}
                   />
+                  {errors.destinationCountry && (
+                    <div className="text-danger">
+                      {errors.destinationCountry}
+                    </div>
+                  )}
                 </div>
                 <div className="d-flex gap-3 my-2">
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="btn btn-primary w-100">
                     Upload
                   </button>
                 </div>
