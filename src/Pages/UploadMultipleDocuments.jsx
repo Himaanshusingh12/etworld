@@ -56,7 +56,7 @@ const UploadMultipleDocuments = () => {
       data.append("destinationCountryCode", formData.destinationCountry);
 
       const res = await axios.post(
-        "https://fedex-backend-1.onrender.com/api/fedex/upload/multiple",
+        "http://localhost:3000/api/fedex/upload/multiple",
         data,
         {
           headers: {

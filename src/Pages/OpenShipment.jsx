@@ -198,7 +198,7 @@ const OpenShipment = () => {
       for (const serviceType of serviceTypes) {
         try {
           const response = await axios.post(
-            "https://fedex-backend-1.onrender.com/api/fedex/openShipment",
+            "http://localhost:3000/api/fedex/openShipment",
             {
               ...openShipment,
               serviceType,

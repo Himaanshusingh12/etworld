@@ -67,7 +67,7 @@ const SpecialServiceOptions = () => {
       setLoading(true);
       setError(null);
       const response = await axios.post(
-        "https://fedex-backend-1.onrender.com/api/fedex/service-availability/SpecialService",
+        "http://localhost:3000/api/fedex/service-availability/SpecialService",
         showDetail
       );
       setResult(response.data.data);

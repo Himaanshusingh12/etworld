@@ -36,7 +36,7 @@ const GlobalTradeDocuments = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `https://fedex-backend-1.onrender.com/api/fedex/global-trade`,
+        `http://localhost:3000/api/fedex/global-trade`,
         globalDocuments
       );
       setResult(response.data.data);

@@ -145,7 +145,7 @@ const RateAndTransitTime = () => {
       for (const serviceType of serviceTypes) {
         try {
           const response = await axios.post(
-            "https://fedex-backend-1.onrender.com/api/fedex/rate-transit",
+            "http://localhost:3000/api/fedex/rate-transit",
             {
               ...calculationData,
               serviceType,

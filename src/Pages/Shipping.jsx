@@ -92,7 +92,18 @@ function Shipping() {
     paymentType: "SENDER",
     serviceType: "FEDEX_2_DAY",
     packagingType: "FEDEX_BOX",
-    pickupType: "USE_SCHEDULED_PICKUP",
+    pickupType: "DROPOFF_AT_FEDEX_LOCATION",
+    totalAmount: "",
+    totalCurrency: "USD",
+    unitPriceAmount: "",
+    unitPriceCurrency: "USD",
+    commodityDescription: "",
+    commodityQuantity: "1",
+    commodityQuantityUnits: "LTR",
+    commodityCountryOfManufacture: "",
+    shipmentPurpose: "",
+    dutiesPaymentType: "",
+    termsOfSale: "",
     packages: [
       {
         packagesNo: "8",
@@ -146,6 +157,13 @@ function Shipping() {
     }));
   };
 
+  const handleDropdownChange = (selectedOption, { name }) => {
+    setShipmentData((prevData) => ({
+      ...prevData,
+      [name]: selectedOption ? selectedOption.value : "",
+    }));
+  };
+
   const updateShipmentField = (fieldName) => (selectedOption) => {
     setShipmentData((prev) => ({
       ...prev,
@@ -171,26 +189,6 @@ function Shipping() {
     "senderStateOrProvinceCode"
   );
 
-  const ServiceOptions = [
-    { label: "International Economy", value: "INTERNATIONAL_ECONOMY" },
-    { label: "FedEx Ground", value: "FEDEX_GROUND" },
-    { label: "First Overnight", value: "FIRST_OVERNIGHT" },
-    { label: "FedEx First Freight", value: "FEDEX_FIRST_FREIGHT" },
-    { label: "FedEx 1 Day Freight", value: "FEDEX_1_DAY_FREIGHT" },
-    { label: "FedEx 2 Day Freight", value: "FEDEX_2_DAY_FREIGHT" },
-    { label: "FedEx 3 Day Freight", value: "FEDEX_3_DAY_FREIGHT" },
-    { label: "Intl Ground Distribution", value: "INTL_GROUND_DISTRIBUTION" },
-    { label: "Ground Home Delivery", value: "GROUND_HOME_DELIVERY" },
-    { label: "Smart Post", value: "SMART_POST" },
-    { label: "Priority Overnight", value: "PRIORITY_OVERNIGHT" },
-    { label: "Standard Overnight", value: "STANDARD_OVERNIGHT" },
-    { label: "FedEx 2 Day", value: "FEDEX_2_DAY" },
-    { label: "FedEx 2 Day AM", value: "FEDEX_2_DAY_AM" },
-    { label: "FedEx Express Saver", value: "FEDEX_EXPRESS_SAVER" },
-    { label: "Same Day", value: "SAME_DAY" },
-    { label: "Same Day City", value: "SAME_DAY_CITY" },
-  ];
-
   const PackagingOptions = [
     { label: "Your Packaging", value: "YOUR_PACKAGING" },
     { label: "FedEx Envelope", value: "FEDEX_ENVELOPE" },
@@ -203,6 +201,93 @@ function Shipping() {
     { label: "FedEx Tube", value: "FEDEX_TUBE" },
   ];
 
+  const quantityUnits = [
+    { label: "LITER", value: "LTR" },
+    { label: "METER", value: "M" },
+    { label: "MILLIGRAM", value: "MG" },
+    { label: "MILLILITER", value: "ML" },
+    { label: "NUMBER", value: "NO" },
+    { label: "OUNCE", value: "OZ" },
+    { label: "PAIR", value: "PR" },
+    { label: "PIECES", value: "PCS" },
+    { label: "POUND", value: "LB" },
+    { label: "CARAT", value: "AR" },
+    { label: "CENTIMETER", value: "CM" },
+    { label: "DOZEN", value: "DOZ" },
+    { label: "EACH", value: "EA" },
+    { label: "FOOT", value: "LFT" },
+    { label: "GRAM", value: "G" },
+    { label: "GROSS", value: "GR" },
+    { label: "KILOGRAM", value: "KG" },
+    { label: "LINEAR METER", value: "LNM" },
+    { label: "DOZEN PAIR", value: "DPR" },
+    { label: "CUBIC FOOT", value: "CFT" },
+    { label: "CUBIC METER", value: "M3" },
+    { label: "SQUARE FOOT", value: "SFT" },
+    { label: "SQUARE METER (M2)", value: "M2" },
+    { label: "SQUARE YARD", value: "SYD" },
+    { label: "YARD", value: "YD" },
+  ];
+
+  const shipmentPurposeOptions = [
+    { label: "Gift", value: "GIFT" },
+    { label: "Not Sold", value: "NOT_SOLD" },
+    { label: "Personal Effects", value: "PERSONAL_EFFECTS" },
+    { label: "Repair and Return", value: "REPAIR_AND_RETURN" },
+    { label: "Sample", value: "SAMPLE" },
+    { label: "Sold", value: "SOLD" },
+  ];
+
+  const paymentTypeOptions = [
+    { label: "Senders", value: "SENDERS" },
+    { label: "Receivers", value: "RECEIVERS" },
+    { label: "Third Party", value: "THIRD_PARTY" },
+    { label: "Collect", value: "COLLECT" },
+  ];
+
+  const TermOfSaleOptions = [
+    {
+      label: "Free On Board Origin",
+      value: "FOB",
+    },
+    {
+      label: "CIF Destination",
+      value: "CIF",
+    },
+    {
+      label: "Ex Works",
+      value: "EXW",
+    },
+    {
+      label: "Free Carrier",
+      value: "FCA",
+    },
+    {
+      label: "Carriage Paid To",
+      value: "CPT",
+    },
+    {
+      label: "Carriage and Insurance Paid",
+      value: "CIP",
+    },
+    {
+      label: "Delivered At Place",
+      value: "DAP",
+    },
+    {
+      label: "Delivered Under Promise",
+      value: "DPU",
+    },
+    {
+      label: "Delivered Duty Paid",
+      value: "DDP",
+    },
+    {
+      label: "Cost and Freight",
+      value: "CFR",
+    },
+  ];
+
   const [resultData, setResultData] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -210,21 +295,29 @@ function Shipping() {
     try {
       setLoading(true);
 
-      const serviceTypes = [
-        "INTERNATIONAL_FIRST",
-        "FEDEX_INTERNATIONAL_PRIORITY_EXPRESS",
-        "INTERNATIONAL_ECONOMY",
-        "FEDEX_2_DAY",
-        "FEDEX_2_DAY_AM",
-        "FEDEX_EXPRESS_SAVER",
-      ];
+      const serviceTypes =
+        ShipmentData.senderCountry !== ShipmentData.recipientsCountry
+          ? [
+              "INTERNATIONAL_FIRST",
+              "FEDEX_INTERNATIONAL_PRIORITY",
+              "FEDEX_INTERNATIONAL_PRIORITY_EXPRESS",
+              "INTERNATIONAL_ECONOMY",
+              "FEDEX_INTERNATIONAL_GROUND",
+            ]
+          : [
+              "FEDEX_GROUND",
+              "FEDEX_2_DAY",
+              "FEDEX_2_DAY_AM",
+              "FEDEX_EXPRESS_SAVER",
+              "STANDARD_OVERNIGHT",
+            ];
 
       let results = [];
 
       for (const serviceType of serviceTypes) {
         try {
           const response = await axios.post(
-            "https://fedex-backend-1.onrender.com/api/fedex/shipment/",
+            "http://localhost:3000/api/fedex/shipment/",
             {
               userId: "456789",
               personName: ShipmentData.senderPersonName,
@@ -249,10 +342,27 @@ function Shipping() {
                 ShipmentData.recipientsIsResidential
               ),
               pickupType: ShipmentData.pickupType,
-              serviceType: serviceType, // Use the iterated service type
+              serviceType: serviceType,
               packagingType: ShipmentData.packagingType,
               paymentType: ShipmentData.paymentType,
               totalWeight: ShipmentData.packages.weight,
+
+              ...(ShipmentData.senderCountry !==
+                ShipmentData.recipientsCountry && {
+                totalAmount: ShipmentData.totalAmount,
+                totalCurrency: ShipmentData.totalCurrency,
+                unitPriceAmount: ShipmentData.unitPriceAmount,
+                unitPriceCurrency: ShipmentData.unitPriceCurrency,
+                commodityDescription: ShipmentData.commodityDescription,
+                commodityQuantity: ShipmentData.commodityQuantity,
+                commodityQuantityUnits: ShipmentData.commodityQuantityUnits,
+                commodityCountryOfManufacture:
+                  ShipmentData.commodityCountryOfManufacture,
+                shipmentPurpose: ShipmentData.shipmentPurpose,
+                dutiesPaymentType: ShipmentData.dutiesPaymentType,
+                termsOfSale: ShipmentData.termsOfSale,
+              }),
+
               packages: ShipmentData.packages.map((pkg) => ({
                 weightValue: pkg.weight,
                 weightUnits: pkg.weightUnit,
@@ -266,7 +376,7 @@ function Shipping() {
 
           console.log(`Response for ${serviceType}:`, response.data);
           results.push({
-            data: response.data || null, // Store the full response data
+            data: response.data || null,
           });
         } catch (error) {
           console.error(`Error fetching data for ${serviceType}:`, error);
@@ -279,17 +389,9 @@ function Shipping() {
       setResultData(results);
     } catch (error) {
       console.error("Unexpected error:", error);
-      setResultData(null); // Reset on unexpected error
+      setResultData(null);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Function to go to the next step
-  const nextSection = () => {
-    setCurrentSection((prev) => prev + 1);
-    if (currentSection === 2) {
-      handleShipment();
     }
   };
 
@@ -297,7 +399,83 @@ function Shipping() {
     setCurrentSection((prev) => (prev > 1 ? prev - 1 : prev));
   };
 
-  console.log(resultData);
+  const [errors, setErrors] = useState({});
+
+  const validateForm = (section) => {
+    const addressField = {
+      senderPersonName: "Contact name is required",
+      senderPhoneNumber: "Phone number is required",
+      senderAddress: "Address is required",
+      senderCity: "City is required",
+      senderCountry: "Country is required",
+      senderPostalCode: "Postal code is required",
+      senderStateOrProvinceCode: "State is required",
+      recipientsPersonName: "Contact name is required",
+      recipientsPhoneNumber: "Phone number is required",
+      recipientsAddress: "Address is required",
+      recipientsCity: "City is required",
+      recipientsStateOrProvinceCode: "State is required",
+      recipientsCountry: "Country is required",
+      recipientsPostalCode: "Postal code is required",
+      recipientsEmail: "Invalid email format",
+      senderEmail: "Invalid email format",
+    };
+
+    const packageField = {
+      packagingType: "Packaging type is required",
+      packagesNo: "Number of packages is required",
+      weight: "Weight is required",
+      weightUnit: "Weight unit is required",
+      length: "Length is required",
+      width: "Width is required",
+      height: "Height is required",
+      units: "Unit is required",
+    };
+
+    const tempErrors = {};
+    let fieldsToValidate = {};
+
+    if (section === 1) {
+      fieldsToValidate = addressField;
+    } else if (section === 2) {
+      fieldsToValidate = packageField;
+    }
+
+    Object.entries(fieldsToValidate).forEach(([field, message]) => {
+      let value;
+      if (
+        section === 2 &&
+        ShipmentData.packages &&
+        ShipmentData.packages.length > 0
+      ) {
+        value =
+          field === "packagingType"
+            ? ShipmentData[field]
+            : ShipmentData.packages[0][field];
+      } else {
+        value = ShipmentData[field];
+      }
+
+      if (!value?.trim()) {
+        tempErrors[field] = message;
+      }
+    });
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
+  const nextSection = () => {
+    const nextSectionNum = currentSection + 1;
+    if (validateForm(currentSection)) {
+      setCurrentSection(nextSectionNum);
+      if (currentSection === 2) {
+        handleShipment();
+      }
+    } else {
+      console.log("Form has errors");
+    }
+  };
 
   return (
     <>
@@ -360,6 +538,11 @@ function Shipping() {
                           value={ShipmentData.recipientsPersonName}
                           onChange={handleChange}
                         />
+                        {errors.recipientsPersonName && (
+                          <div className="text-danger">
+                            {errors.recipientsPersonName}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <PhoneInput
@@ -373,6 +556,11 @@ function Shipping() {
                           }
                           inputClass="form-control"
                         />
+                        {errors.recipientsPhoneNumber && (
+                          <div className="text-danger">
+                            {errors.recipientsPhoneNumber}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <input
@@ -383,6 +571,11 @@ function Shipping() {
                           value={ShipmentData.recipientsEmail}
                           onChange={handleChange}
                         />
+                        {errors.recipientsEmail && (
+                          <div className="text-danger">
+                            {errors.recipientsEmail}
+                          </div>
+                        )}
                       </div>
                       <h6>Address</h6>
                       <div className="mb-2">
@@ -395,6 +588,11 @@ function Shipping() {
                           )}
                           onChange={handleRecipientsCountryChange}
                         />
+                        {errors.recipientsCountry && (
+                          <div className="text-danger">
+                            {errors.recipientsCountry}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <input
@@ -405,6 +603,11 @@ function Shipping() {
                           value={ShipmentData.recipientsAddress}
                           onChange={handleChange}
                         />
+                        {errors.recipientsAddress && (
+                          <div className="text-danger">
+                            {errors.recipientsAddress}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <input
@@ -415,37 +618,53 @@ function Shipping() {
                           value={ShipmentData.recipientsPostalCode}
                           onChange={handleChange}
                         />
+                        {errors.recipientsPostalCode && (
+                          <div className="text-danger">
+                            {errors.recipientsPostalCode}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <Select
                           options={stateOptions}
                           placeholder="Select State"
-                          value={countryOptions.find(
+                          value={stateOptions.find(
                             (option) =>
                               option.value ===
                               ShipmentData.recipientsStateOrProvinceCode
                           )}
                           onChange={handleSelectState}
                         />
+                        {errors.recipientsStateOrProvinceCode && (
+                          <div className="text-danger">
+                            {errors.recipientsStateOrProvinceCode}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <Select
                           options={cityOptions}
                           placeholder="Select City *"
-                          value={countryOptions.find(
+                          name="recipientsCity"
+                          value={cityOptions.find(
                             (option) =>
-                              option.value === ShipmentData.receiverCity
+                              option.value === ShipmentData.recipientsCity
                           )}
                           onChange={handleCityChange}
                         />
+                        {errors.recipientsCity && (
+                          <div className="text-danger">
+                            {errors.recipientsCity}
+                          </div>
+                        )}
                       </div>
                       <div className="form-check">
                         <input
                           className="form-check-input"
                           type="checkbox"
                           id="residentialAddress"
-                          name="receiverIsResidential"
-                          checked={ShipmentData.receiverIsResidential}
+                          name="recipientsIsResidential"
+                          checked={ShipmentData.recipientsIsResidential}
                           onChange={handleChange}
                         />
                         <label
@@ -460,8 +679,8 @@ function Shipping() {
                           className="form-check-input"
                           type="checkbox"
                           id="saveRecipient"
-                          name="receiverIsSave"
-                          checked={ShipmentData.receiverIsSave}
+                          name="recipientsIsSave"
+                          checked={ShipmentData.recipientsIsSave}
                           onChange={handleChange}
                         />
                         <label
@@ -498,6 +717,11 @@ function Shipping() {
                           value={ShipmentData.senderPersonName}
                           onChange={handleChange}
                         />
+                        {errors.senderPersonName && (
+                          <div className="text-danger">
+                            {errors.senderPersonName}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <PhoneInput
@@ -510,7 +734,13 @@ function Shipping() {
                             }))
                           }
                           inputClass="form-control"
+                          name="senderPhoneNumber"
                         />
+                        {errors.senderPhoneNumber && (
+                          <div className="text-danger">
+                            {errors.senderPhoneNumber}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <input
@@ -521,6 +751,11 @@ function Shipping() {
                           value={ShipmentData.senderEmail}
                           onChange={handleChange}
                         />
+                        {errors.senderEmail && (
+                          <div className="text-danger">
+                            {errors.senderEmail}
+                          </div>
+                        )}
                       </div>
                       <h6>Address</h6>
                       <div className="mb-2">
@@ -533,6 +768,11 @@ function Shipping() {
                           )}
                           onChange={handleSenderCountryChange}
                         />
+                        {errors.senderCountry && (
+                          <div className="text-danger">
+                            {errors.senderCountry}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <input
@@ -543,6 +783,11 @@ function Shipping() {
                           value={ShipmentData.senderAddress}
                           onChange={handleChange}
                         />
+                        {errors.senderAddress && (
+                          <div className="text-danger">
+                            {errors.senderAddress}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <input
@@ -553,28 +798,41 @@ function Shipping() {
                           value={ShipmentData.senderPostalCode}
                           onChange={handleChange}
                         />
+                        {errors.senderPostalCode && (
+                          <div className="text-danger">
+                            {errors.senderPostalCode}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <Select
                           options={stateOptions}
                           placeholder="Select State"
-                          value={countryOptions.find(
+                          value={stateOptions.find(
                             (option) =>
                               option.value ===
                               ShipmentData.senderStateOrProvinceCode
                           )}
                           onChange={handleSenderStateChange}
                         />
+                        {errors.senderStateOrProvinceCode && (
+                          <div className="text-danger">
+                            {errors.senderStateOrProvinceCode}
+                          </div>
+                        )}
                       </div>
                       <div className="mb-2">
                         <Select
                           options={cityOptions}
                           placeholder="Select City *"
-                          value={countryOptions.find(
+                          value={cityOptions.find(
                             (option) => option.value === ShipmentData.senderCity
                           )}
                           onChange={handleSenderCityChange}
                         />
+                        {errors.senderCity && (
+                          <div className="text-danger">{errors.senderCity}</div>
+                        )}
                       </div>
                       <div className="form-check">
                         <input
@@ -618,45 +876,172 @@ function Shipping() {
                 {/* Package detail section */}
                 {currentSection === 2 && (
                   <div>
+                    {ShipmentData.senderCountry !==
+                      ShipmentData.recipientsCountry && (
+                      <div className="mb-3">
+                        <h5 className="mb-3 fw-bold text-primary">
+                          <i className="fa fa-check-circle"></i> International
+                          Shipment Details
+                        </h5>
+                        <div className="row g-3 mb-3">
+                          <div className="col-md-4 col-sm-6">
+                            <label className="form-label fw-semibold">
+                              Unit Price <span className="text-danger">*</span>
+                            </label>
+                            <div className="input-group">
+                              <input
+                                type="number"
+                                name="unitPriceAmount"
+                                className="form-control"
+                                value={ShipmentData.unitPriceAmount}
+                                onChange={handleChange}
+                                placeholder="0"
+                                min="0"
+                              />
+                              <select
+                                name="unitPriceCurrency"
+                                className="form-select"
+                                value={ShipmentData.unitPriceCurrency || "USD"}
+                                onChange={(e) => handleChange(e)}
+                              >
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="INR">INR</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-6">
+                            <label className="form-label fw-semibold">
+                              Total Amount{" "}
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="input-group">
+                              <input
+                                type="number"
+                                name="totalAmount"
+                                className="form-control"
+                                value={ShipmentData.totalAmount}
+                                onChange={handleChange}
+                                placeholder="0"
+                                step="1"
+                                min="0"
+                              />
+                              <select
+                                name="totalCurrency"
+                                className="form-select"
+                                value={ShipmentData.totalCurrency || "USD"}
+                                onChange={(e) => handleChange(e)}
+                              >
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="INR">INR</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-6">
+                            <label className="form-label fw-semibold">
+                              Quantity <span className="text-danger">*</span>
+                            </label>
+                            <div className="input-group">
+                              <input
+                                type="number"
+                                name="commodityQuantity"
+                                className="form-control"
+                                value={ShipmentData.commodityQuantity}
+                                onChange={handleChange}
+                                placeholder="0"
+                                min="0"
+                              />
+                              <select
+                                name="commodityQuantityUnits"
+                                className="form-select"
+                                value={
+                                  ShipmentData.commodityQuantityUnits || ""
+                                }
+                                onChange={(e) => handleChange(e)}
+                              >
+                                {quantityUnits.map((unit) => (
+                                  <option key={unit.value} value={unit.value}>
+                                    {unit.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row g-3 mb-3">
+                          <div className="col-md-6">
+                            <Select
+                              placeholder="Select Manufacturer Country"
+                              options={countryOptions}
+                              value={countryOptions.find(
+                                (option) =>
+                                  option.value ===
+                                  ShipmentData.commodityCountryOfManufacture
+                              )}
+                              onChange={handleDropdownChange}
+                              name="commodityCountryOfManufacture"
+                            />
+                          </div>
+                          <div className="col-md-6">
+                            <Select
+                              options={paymentTypeOptions}
+                              placeholder="Select Duties Payment Type"
+                              value={paymentTypeOptions.find(
+                                (option) =>
+                                  option.value ===
+                                  ShipmentData.dutiesPaymentType
+                              )}
+                              onChange={handleDropdownChange}
+                              name="dutiesPaymentType"
+                            />
+                          </div>
+                        </div>
+                        <div className="row g-3">
+                          <div className="col-md-6">
+                            <Select
+                              options={shipmentPurposeOptions}
+                              placeholder="Select purpose"
+                              value={shipmentPurposeOptions.find(
+                                (option) =>
+                                  option.value === ShipmentData.shipmentPurpose
+                              )}
+                              onChange={handleDropdownChange}
+                              name="shipmentPurpose"
+                            />
+                          </div>
+                          <div className="col-md-6">
+                            <Select
+                              options={TermOfSaleOptions}
+                              placeholder="Select terms"
+                              value={TermOfSaleOptions.find(
+                                (option) =>
+                                  option.value === ShipmentData.termsOfSale
+                              )}
+                              onChange={handleDropdownChange}
+                              name="termsOfSale"
+                            />
+                          </div>
+                        </div>
+                        <div className="my-3">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter item description"
+                            name="commodityDescription"
+                            value={ShipmentData.commodityDescription}
+                            onChange={handleChange}
+                          />
+                        </div>
+                      </div>
+                    )}
+
                     <h5 className="fw-bold text-primary">
                       <i className="fa fa-check-circle"></i> Package details
                     </h5>
                     <p className="fs-5">What type of packaging will be used?</p>
-
-                    <div className="mb-2">
-                      <label className="form-label fw-bold">PickUp *</label>
-                      <select
-                        onChange={handleSelectChange}
-                        name="pickupType"
-                        value={ShipmentData.pickupType}
-                        className="form-control"
-                      >
-                        <option selected value={"DROPOFF_AT_FEDEX_LOCATION"}>
-                          Dropoff at Fedex Location
-                        </option>
-                        <option value={"CONTACT_FEDEX_TO_SCHEDULE"}>
-                          Contact Fedex To Schedule
-                        </option>
-                        <option value={"USE_SCHEDULED_PICKUP"}>
-                          Use Scheduled Pickup
-                        </option>
-                      </select>
-                    </div>
-                    <div className="mb-2">
-                      <label className="form-label fw-bold">Service *</label>
-                      <select
-                        onChange={handleSelectChange}
-                        name="serviceType"
-                        value={ShipmentData.serviceType}
-                        className="form-control"
-                      >
-                        {ServiceOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
                     <div className="mb-2">
                       <label className="form-label fw-bold">Packaging *</label>
                       <select
@@ -671,7 +1056,13 @@ function Shipping() {
                           </option>
                         ))}
                       </select>
+                      {errors.packagingType && (
+                        <div className="text-danger">
+                          {errors.packagingType}
+                        </div>
+                      )}
                     </div>
+
                     <div className="form-check mb-3">
                       <input
                         className="form-check-input"
@@ -687,7 +1078,6 @@ function Shipping() {
                       </label>
                     </div>
 
-                    {/* Package Input Rows */}
                     {ShipmentData.packages.map((pkg, index) => (
                       <div key={index}>
                         <div className="row align-items-end g-2 mb-3">
@@ -702,6 +1092,11 @@ function Shipping() {
                               name="packagesNo"
                               onChange={(e) => handleChange(e, index)}
                             />
+                            {errors.packagesNo && (
+                              <div className="text-danger">
+                                {errors.packagesNo}
+                              </div>
+                            )}
                           </div>
 
                           {/* Weight */}
@@ -728,6 +1123,14 @@ function Shipping() {
                                 <option value="LB">lbs</option>
                               </select>
                             </div>
+                            {errors.weight && (
+                              <div className="text-danger">{errors.weight}</div>
+                            )}
+                            {errors.weightUnit && (
+                              <div className="text-danger">
+                                {errors.weightUnit}
+                              </div>
+                            )}
                           </div>
 
                           {/* Dimensions */}
@@ -763,6 +1166,15 @@ function Shipping() {
                                 placeholder="H"
                               />
                             </div>
+                            {errors.length && (
+                              <div className="text-danger">{errors.length}</div>
+                            )}
+                            {errors.width && (
+                              <div className="text-danger">{errors.width}</div>
+                            )}
+                            {errors.height && (
+                              <div className="text-danger">{errors.height}</div>
+                            )}
                           </div>
 
                           {/* Dimension Unit */}
@@ -781,6 +1193,9 @@ function Shipping() {
                               </option>
                               <option value="IN">in</option>
                             </select>
+                            {errors.units && (
+                              <div className="text-danger">{errors.units}</div>
+                            )}
                           </div>
 
                           {index !== 0 && (

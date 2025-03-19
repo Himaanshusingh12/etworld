@@ -48,7 +48,7 @@ const UploadDocuments = () => {
       data.append("destinationCountry", formData.destinationCountry);
 
       const res = await axios.post(
-        "https://fedex-backend-1.onrender.com/api/fedex/upload",
+        "http://localhost:3000/api/fedex/upload",
         {
           file: formData.file,
           fileName: formData.fileName,
