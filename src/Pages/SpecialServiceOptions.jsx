@@ -7,16 +7,15 @@ import axios from "axios"; // Added axios import
 const SpecialServiceOptions = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
 
   const [showDetail, setShowDetail] = useState({
-    senderPostalCode: "90210",
-    senderCountryCode: "US",
-    recipientPostalCode: "33101",
-    recipientCountryCode: "US",
+    senderPostalCode: "",
+    senderCountryCode: "",
+    recipientPostalCode: "",
+    recipientCountryCode: "",
     packagingType: "YOUR_PACKAGING",
     weightUnits: "LB",
-    weightValue: "10",
+    weightValue: "",
     pickupType: "DROPOFF_AT_FEDEX_LOCATION",
   });
 
@@ -53,26 +52,52 @@ const SpecialServiceOptions = () => {
     }));
   };
 
-  const handleShowRates = async () => {
-    if (
-      !showDetail.senderPostalCode ||
-      !showDetail.recipientPostalCode ||
-      !showDetail.weightValue
-    ) {
-      setError("Please fill in all required fields");
-      return;
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!showDetail.senderPostalCode) {
+      newErrors.senderCity = "Sender city is required";
+    }
+    if (!showDetail.senderCountryCode) {
+      newErrors.senderCountryCode = "Sender country code is required";
+    }
+    if (!showDetail.recipientPostalCode) {
+      newErrors.recipientCity = "Recipient city is required";
+    }
+    if (!showDetail.recipientCountryCode) {
+      newErrors.recipientCountryCode = "Recipient country code is required";
+    }
+    if (!showDetail.packagingType) {
+      newErrors.packagingType = "Packaging type is required";
+    }
+    if (!showDetail.weightValue > 0) {
+      newErrors.weightValue = "Weight is must be greater than 0";
+    }
+    if (!showDetail.weightUnits) {
+      newErrors.weightUnits = "Weight units is required";
+    }
+    if (!showDetail.pickupType) {
+      newErrors.pickupType = "Pickup type is required";
     }
 
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleShowRates = async () => {
+    if (!validateForm()) {
+      return;
+    }
     try {
       setLoading(true);
-      setError(null);
       const response = await axios.post(
-        "https://fedex-backend-1.onrender.com/api/fedex/service-availability/SpecialService",
+        "http://localhost:3000/api/fedex/service-availability/SpecialService",
         showDetail
       );
       setResult(response.data.data);
     } catch (err) {
-      setError("Failed to fetch shipping rates. Please try again.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -107,6 +132,9 @@ const SpecialServiceOptions = () => {
                     value={showDetail.senderCity}
                     onChange={handleChange}
                   />
+                  {errors.senderCity && (
+                    <div className="text-danger">{errors.senderCity}</div>
+                  )}
                 </div>
 
                 <div className="mb-3">
@@ -119,6 +147,9 @@ const SpecialServiceOptions = () => {
                     value={showDetail.recipientCity}
                     onChange={handleChange}
                   />
+                  {errors.recipientCity && (
+                    <div className="text-danger">{errors.recipientCity}</div>
+                  )}
                 </div>
 
                 <div className="mb-3">
@@ -134,6 +165,9 @@ const SpecialServiceOptions = () => {
                       handleSelectChange(option, { name: "pickupType" })
                     }
                   />
+                  {errors.pickupType && (
+                    <div className="text-danger">{errors.pickupType}</div>
+                  )}
                 </div>
 
                 <div className="mb-3">
@@ -149,6 +183,9 @@ const SpecialServiceOptions = () => {
                       handleSelectChange(option, { name: "packagingType" })
                     }
                   />
+                  {errors.packagingType && (
+                    <div className="text-danger">{errors.packagingType}</div>
+                  )}
                 </div>
 
                 <div className="col-md-3">
@@ -173,6 +210,12 @@ const SpecialServiceOptions = () => {
                     </select>
                   </div>
                 </div>
+                {errors.weightValue && (
+                  <div className="text-danger">{errors.weightValue}</div>
+                )}
+                {errors.weightUnits && (
+                  <div className="text-danger">{errors.weightUnits}</div>
+                )}
 
                 <div className="d-flex gap-3 my-2">
                   <button

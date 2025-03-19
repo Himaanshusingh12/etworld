@@ -16,9 +16,9 @@ const GlobalTradeDocuments = () => {
   }));
 
   const [globalDocuments, setGlobalDocuments] = useState({
-    countryCode: "CA",
-    recipientsCountry: "SG",
-    carrierCode: "FDXE",
+    countryCode: "",
+    recipientsCountry: "",
+    carrierCode: "",
   });
 
   const serviceOptions = [
@@ -32,11 +32,21 @@ const GlobalTradeDocuments = () => {
     },
   ];
 
+  const [error, setError] = useState(null);
+
   const handleClick = async () => {
+    if (
+      !globalDocuments.countryCode ||
+      !globalDocuments.recipientsCountry ||
+      !globalDocuments.carrierCode
+    ) {
+      setError("All fields are required.");
+      return;
+    }
     setLoading(true);
     try {
       const response = await axios.post(
-        `https://fedex-backend-1.onrender.com/api/fedex/global-trade`,
+        `http://localhost:3000/api/fedex/global-trade`,
         globalDocuments
       );
       setResult(response.data.data);
@@ -109,6 +119,8 @@ const GlobalTradeDocuments = () => {
                   }
                 />
               </div>
+
+              {error && <div className="text-danger">{error}</div>}
 
               <div className="d-flex gap-3 my-2">
                 <button

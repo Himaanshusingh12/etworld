@@ -8,10 +8,10 @@ const ServicesAndPackagingOptions = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [showDetail, setShowDetail] = useState({
-    postalCode: "38115",
-    countryCode: "US",
-    recipientPostalCode: "38115",
-    recipientCountryCode: "US",
+    postalCode: "",
+    countryCode: "",
+    recipientPostalCode: "",
+    recipientCountryCode: "",
     weightUnits: "KG",
     weightValue: "4",
     carrierCode: "FDXE",
@@ -40,21 +40,43 @@ const ServicesAndPackagingOptions = () => {
     { label: "FedEx Custom Critical", value: "FXCC" },
   ];
 
-  const handleShowdetail = async () => {
-    if (
-      !showDetail.weightValue ||
-      !showDetail.postalCode ||
-      !showDetail.recipientPostalCode
-    ) {
-      setError("Please fill in all required fields");
-      return;
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!showDetail.senderCity) {
+      newErrors.senderCity = "Sender city is required";
+    }
+    if (!showDetail.recipientCity) {
+      newErrors.recipientCity = "Recipient city is required";
+    }
+    if (!showDetail.postalCode) {
+      newErrors.postalCode = "Sender postal code is required";
+    }
+    if (!showDetail.recipientPostalCode) {
+      newErrors.recipientPostalCode = "Recipient postal code is required";
+    }
+    if (!showDetail.weightValue > 0) {
+      newErrors.weightValue = "Weight is must be greater than 0";
+    }
+    if (!showDetail.carrierCode) {
+      newErrors.carrierCode = "Pickup type is required";
     }
 
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleShowdetail = async () => {
+    if (!validateForm()) {
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
       const response = await axios.post(
-        "https://fedex-backend-1.onrender.com/api/fedex/service-availability/PackagingOptions",
+        "http://localhost:3000/api/fedex/service-availability/PackagingOptions",
         showDetail
       );
       console.log(response.data.data, "response");
@@ -83,12 +105,6 @@ const ServicesAndPackagingOptions = () => {
                   shipping rates
                 </h5>
 
-                {error && (
-                  <div className="alert alert-danger" role="alert">
-                    {error}
-                  </div>
-                )}
-
                 <div className="mb-3">
                   <h6>From *</h6>
                   <input
@@ -99,6 +115,9 @@ const ServicesAndPackagingOptions = () => {
                     value={showDetail.senderCity}
                     onChange={handleChange}
                   />
+                  {errors.senderCity && (
+                    <div className="text-danger">{errors.senderCity}</div>
+                  )}
                 </div>
 
                 <div className="mb-3">
@@ -111,6 +130,9 @@ const ServicesAndPackagingOptions = () => {
                     value={showDetail.recipientCity}
                     onChange={handleChange}
                   />
+                  {errors.recipientCity && (
+                    <div className="text-danger">{errors.recipientCity}</div>
+                  )}
                 </div>
 
                 <div className="mb-3">
@@ -123,6 +145,9 @@ const ServicesAndPackagingOptions = () => {
                     )}
                     onChange={handleSelectChange}
                   />
+                  {errors.carrierCode && (
+                    <div className="text-danger">{errors.carrierCode}</div>
+                  )}
                 </div>
 
                 <div className="col-md-3">
@@ -136,6 +161,7 @@ const ServicesAndPackagingOptions = () => {
                       placeholder="0"
                       onChange={handleChange}
                     />
+
                     <select
                       name="weightUnits"
                       value={showDetail.weightUnits}
@@ -147,6 +173,12 @@ const ServicesAndPackagingOptions = () => {
                     </select>
                   </div>
                 </div>
+                {errors.weightUnits && (
+                  <div className="text-danger">{errors.weightUnits}</div>
+                )}
+                {errors.weightValue && (
+                  <div className="text-danger">{errors.weightValue}</div>
+                )}
 
                 <div className="d-flex gap-3 my-2">
                   <button

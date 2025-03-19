@@ -40,7 +40,7 @@ const OpenShipment = () => {
 
   const [openShipment, setOpenShipment] = useState({
     userId: user?.userid,
-    personName: "Priya Patel",
+    personName: "Jay",
     phoneNumber: "+919876543210",
     address: "456 Pine Street",
     city: "San Francisco",
@@ -59,10 +59,16 @@ const OpenShipment = () => {
     pickupType: "DROPOFF_AT_FEDEX_LOCATION",
     packagingType: "FEDEX_BOX",
     serviceType: "FEDEX_2_DAY",
-    weightUnits: "LB",
-    weightValue: "2.3",
     packages: [
-      { packagesNo: "1", length: "12", width: "8", height: "6", units: "IN" },
+      {
+        packagesNo: "1",
+        weightUnits: "LB",
+        weightValue: "5",
+        length: "12",
+        width: "8",
+        height: "6",
+        units: "IN",
+      },
     ],
   });
 
@@ -75,12 +81,12 @@ const OpenShipment = () => {
         ...prevState.packages,
         {
           packagesNo: "1",
-          weight: "",
-          weightUnit: "KG",
-          length: "",
-          width: "",
-          height: "",
-          units: "CM",
+          weightUnits: "LB",
+          weightValue: "5",
+          length: "12",
+          width: "8",
+          height: "6",
+          units: "IN",
         },
       ],
     }));
@@ -163,12 +169,6 @@ const OpenShipment = () => {
     { label: "FedEx Tube", value: "FEDEX_TUBE" },
   ];
 
-  const PickupOptions = [
-    { label: "Drop at Fedex Location", value: "DROPOFF_AT_FEDEX_LOCATION" },
-    { label: "Contact Fedex To Schedule", value: "CONTACT_FEDEX_TO_SCHEDULE" },
-    { label: "Use Scheduled Pickup", value: "USE_SCHEDULED_PICKUP" },
-  ];
-
   const ServiceOptions = [
     { label: "FedEx Ground", value: "FEDEX_GROUND" },
     { label: "First Overnight", value: "FIRST_OVERNIGHT" },
@@ -189,6 +189,7 @@ const OpenShipment = () => {
       const serviceTypes = [
         "FEDEX_GROUND",
         "FEDEX_2_DAY",
+        "STANDARD_OVERNIGHT",
         "FEDEX_2_DAY_AM",
         "FEDEX_EXPRESS_SAVER",
       ];
@@ -198,7 +199,7 @@ const OpenShipment = () => {
       for (const serviceType of serviceTypes) {
         try {
           const response = await axios.post(
-            "https://fedex-backend-1.onrender.com/api/fedex/openShipment",
+            "http://localhost:3000/api/fedex/openShipment",
             {
               ...openShipment,
               serviceType,
@@ -211,9 +212,7 @@ const OpenShipment = () => {
         } catch (error) {
           console.error(`Error fetching data for ${serviceType}:`, error);
           results.push({
-            serviceType,
-            data: null, // No data on error
-            error: error.message, // Error message
+            data: null,
           });
         }
       }
@@ -228,19 +227,90 @@ const OpenShipment = () => {
     }
   };
 
-  // Function to go to the next step
+  const [error, setError] = useState({});
+  console.log(error);
+
+  const validateForm = (section) => {
+    const addressField = {
+      personName: "Contact name is required",
+      phoneNumber: "Phone number is required",
+      address: "Address is required",
+      city: "City is required",
+      countryCode: "Country is required",
+      postalCode: "Postal code is required",
+      stateOrProvinceCode: "State is required",
+      email: "Email is required",
+      recipientsPersonName: "Contact name is required",
+      recipientsPhoneNumber: "Phone number is required",
+      recipientsAddress: "Address is required",
+      recipientsEmail: "Email is required",
+      recipientsCity: "City is required",
+      recipientsStateOrProvinceCode: "State is required",
+      recipientsCountryCode: "Country is required",
+      pickupType: "Pickup type is required",
+      serviceType: "Service type is required",
+      packagingType: "Packaging type is required",
+      recipientsPostalCode: "Postal code is required",
+    };
+
+    const packageField = {
+      packagesNo: "Number of packages is required",
+      weightValue: "Weight is required",
+      weightUnits: "Weight unit is required",
+      length: "Length is required",
+      width: "Width is required",
+      height: "Height is required",
+      units: "Unit is required",
+    };
+
+    const tempErrors = {};
+    let fieldsToValidate = {};
+
+    if (section === 1) {
+      fieldsToValidate = addressField;
+    } else if (section === 2) {
+      fieldsToValidate = packageField;
+    }
+
+    Object.entries(fieldsToValidate).forEach(([field, message]) => {
+      let value;
+      if (
+        section === 2 &&
+        openShipment.packages &&
+        openShipment.packages.length > 0
+      ) {
+        value =
+          field === "packagingType"
+            ? openShipment[field]
+            : openShipment.packages[0][field];
+      } else {
+        value = openShipment[field];
+      }
+
+      if (!value?.trim()) {
+        tempErrors[field] = message;
+      }
+    });
+
+    setError(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
   const nextSection = () => {
-    setCurrentSection((prev) => prev + 1);
-    if (currentSection === 2) {
-      handleShipment();
+    const nextSectionNum = currentSection + 1;
+    if (validateForm(currentSection)) {
+      setCurrentSection(nextSectionNum);
+      if (currentSection === 2) {
+        handleShipment();
+      }
+    } else {
+      console.log("Form has errors");
     }
   };
 
   const prevSection = () => {
     setCurrentSection((prev) => (prev > 1 ? prev - 1 : prev));
   };
-
-  console.log(resultData);
 
   return (
     <>
@@ -268,6 +338,11 @@ const OpenShipment = () => {
                         onChange={handleChange}
                         name="recipientsPersonName"
                       />
+                      {error.recipientsPersonName && (
+                        <span className="text-danger">
+                          {error.recipientsPersonName}
+                        </span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <PhoneInput
@@ -281,6 +356,11 @@ const OpenShipment = () => {
                         }
                         inputClass="form-control"
                       />
+                      {error.recipientsPhoneNumber && (
+                        <span className="text-danger">
+                          {error.recipientsPhoneNumber}
+                        </span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <input
@@ -291,6 +371,11 @@ const OpenShipment = () => {
                         onChange={handleChange}
                         name="recipientsEmail"
                       />
+                      {error.recipientsEmail && (
+                        <span className="text-danger">
+                          {error.recipientsEmail}
+                        </span>
+                      )}
                     </div>
                     <h6>Address</h6>
                     <div className="mb-2">
@@ -303,6 +388,11 @@ const OpenShipment = () => {
                         )}
                         onChange={handleRecipientsCountryChange}
                       />
+                      {error.recipientsCountryCode && (
+                        <span className="text-danger">
+                          {error.recipientsCountryCode}
+                        </span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <input
@@ -313,6 +403,11 @@ const OpenShipment = () => {
                         onChange={handleChange}
                         name="recipientsAddress"
                       />
+                      {error.recipientsAddress && (
+                        <span className="text-danger">
+                          {error.recipientsAddress}
+                        </span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <input
@@ -323,6 +418,11 @@ const OpenShipment = () => {
                         onChange={handleChange}
                         name="recipientsPostalCode"
                       />
+                      {error.recipientsPostalCode && (
+                        <span className="text-danger">
+                          {error.recipientsPostalCode}
+                        </span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <Select
@@ -335,6 +435,11 @@ const OpenShipment = () => {
                         )}
                         onChange={handleSelectState}
                       />
+                      {error.recipientsStateOrProvinceCode && (
+                        <span className="text-danger">
+                          {error.recipientsStateOrProvinceCode}
+                        </span>
+                      )}
                     </div>
 
                     <div className="mb-2">
@@ -347,6 +452,11 @@ const OpenShipment = () => {
                         )}
                         onChange={handleCityChange}
                       />
+                      {error.recipientsCity && (
+                        <span className="text-danger">
+                          {error.recipientsCity}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -363,6 +473,9 @@ const OpenShipment = () => {
                         onChange={handleChange}
                         name="personName"
                       />
+                      {error.personName && (
+                        <span className="text-danger">{error.personName}</span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <PhoneInput
@@ -377,6 +490,9 @@ const OpenShipment = () => {
                         name="phoneNumber"
                         inputClass="form-control"
                       />
+                      {error.phoneNumber && (
+                        <span className="text-danger">{error.phoneNumber}</span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <input
@@ -387,6 +503,9 @@ const OpenShipment = () => {
                         onChange={handleChange}
                         name="email"
                       />
+                      {error.email && (
+                        <span className="text-danger">{error.email}</span>
+                      )}
                     </div>
                     <h6>Address</h6>
                     <div className="mb-2">
@@ -398,6 +517,9 @@ const OpenShipment = () => {
                         )}
                         onChange={handleSenderCountryChange}
                       />
+                      {error.countryCode && (
+                        <span className="text-danger">{error.countryCode}</span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <input
@@ -408,6 +530,9 @@ const OpenShipment = () => {
                         onChange={handleChange}
                         name="address"
                       />
+                      {error.address && (
+                        <span className="text-danger">{error.address}</span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <input
@@ -418,6 +543,9 @@ const OpenShipment = () => {
                         onChange={handleChange}
                         name="postalCode"
                       />
+                      {error.postalCode && (
+                        <span className="text-danger">{error.postalCode}</span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <Select
@@ -429,6 +557,11 @@ const OpenShipment = () => {
                         )}
                         onChange={handleSenderStateChange}
                       />
+                      {error.stateOrProvinceCode && (
+                        <span className="text-danger">
+                          {error.stateOrProvinceCode}
+                        </span>
+                      )}
                     </div>
                     <div className="mb-2">
                       <Select
@@ -439,6 +572,9 @@ const OpenShipment = () => {
                         )}
                         onChange={handleSenderCityChange}
                       />
+                      {error.senderCity && (
+                        <span className="text-danger">{error.senderCity}</span>
+                      )}
                     </div>
                   </div>
                 </>
@@ -470,6 +606,9 @@ const OpenShipment = () => {
                       name="serviceType"
                       placeholder="Select Service"
                     />
+                    {error.serviceType && (
+                      <span className="text-danger">{error.serviceType}</span>
+                    )}
                   </div>
 
                   <div className="mb-2">
@@ -483,6 +622,9 @@ const OpenShipment = () => {
                       name="packagingType"
                       placeholder="Select Packaging"
                     />
+                    {error.packagingType && (
+                      <span className="text-danger">{error.packagingType}</span>
+                    )}
                   </div>
 
                   <div className="form-check mb-3">
@@ -514,6 +656,11 @@ const OpenShipment = () => {
                             name="packagesNo"
                             onChange={(e) => handleChange(e, index)}
                           />
+                          {error.packagesNo && (
+                            <span className="text-danger">
+                              {error.packagesNo}
+                            </span>
+                          )}
                         </div>
                         <div className="col-md-3">
                           <label className="form-label fw-bold">Weight *</label>
@@ -537,7 +684,11 @@ const OpenShipment = () => {
                             </select>
                           </div>
                         </div>
-
+                        {error.weightValue && (
+                          <span className="text-danger">
+                            {error.weightValue}
+                          </span>
+                        )}
                         <div className="col-md-5">
                           <label className="form-label fw-bold">
                             Dimensions (L × W × H)
@@ -551,6 +702,11 @@ const OpenShipment = () => {
                               value={pkg.length}
                               onChange={(e) => handleChange(e, index)}
                             />
+                            {error.length && (
+                              <span className="text-danger">
+                                {error.length}
+                              </span>
+                            )}
                             <span className="input-group-text">×</span>
                             <input
                               type="number"
@@ -560,6 +716,9 @@ const OpenShipment = () => {
                               value={pkg.width}
                               onChange={(e) => handleChange(e, index)}
                             />
+                            {error.width && (
+                              <span className="text-danger">{error.width}</span>
+                            )}
                             <span className="input-group-text">×</span>
                             <input
                               type="number"
@@ -569,6 +728,11 @@ const OpenShipment = () => {
                               value={pkg.height}
                               onChange={(e) => handleChange(e, index)}
                             />
+                            {error.height && (
+                              <span className="text-danger">
+                                {error.height}
+                              </span>
+                            )}
                           </div>
                         </div>
 
