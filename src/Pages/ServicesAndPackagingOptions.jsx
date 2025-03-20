@@ -76,7 +76,7 @@ const ServicesAndPackagingOptions = () => {
       setLoading(true);
       setError(null);
       const response = await axios.post(
-        "http://localhost:3000/api/fedex/service-availability/PackagingOptions",
+        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/service-availability/PackagingOptions`,
         showDetail
       );
       console.log(response.data.data, "response");

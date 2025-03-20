@@ -46,7 +46,7 @@ const GlobalTradeDocuments = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `http://localhost:3000/api/fedex/global-trade`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/global-trade`,
         globalDocuments
       );
       setResult(response.data.data);

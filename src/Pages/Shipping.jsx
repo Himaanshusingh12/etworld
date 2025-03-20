@@ -317,7 +317,7 @@ function Shipping() {
       for (const serviceType of serviceTypes) {
         try {
           const response = await axios.post(
-            "http://localhost:3000/api/fedex/shipment/",
+            `${process.env.REACT_APP_BACKEND_URL}/api/fedex/shipment/`,
             {
               userId: "456789",
               personName: ShipmentData.senderPersonName,

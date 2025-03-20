@@ -334,7 +334,7 @@ const SchedulePickUp = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:3000/api/fedex/pickUp/",
+        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/pickUp/`,
         schedulePickUp
       );
       setResultData(response.data);

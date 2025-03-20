@@ -192,7 +192,7 @@ const RateAndTransitTime = () => {
       for (const serviceType of serviceTypes) {
         try {
           const response = await axios.post(
-            "http://localhost:3000/api/fedex/rate-transit",
+            `${process.env.REACT_APP_BACKEND_URL}/api/fedex/rate-transit`,
             {
               ...calculationData,
               serviceType,

@@ -74,7 +74,7 @@ const UploadDocuments = () => {
       data.append("destinationCountry", formData.destinationCountry);
 
       const res = await axios.post(
-        "http://localhost:3000/api/fedex/upload",
+        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/upload`,
         {
           file: formData.file,
           fileName: formData.fileName,
