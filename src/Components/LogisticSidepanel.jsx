@@ -82,6 +82,13 @@ function LogisticSidepanel() {
           >
             <i className="bi bi-box me-2"></i>Upload Multiple Documents
           </NavLink>
+          <NavLink
+            to="/all-shipments"
+            // className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"
+            className="nav-link text-white p-2 mb-2 rounded text-nowrap d-inline-block"
+          >
+            <i className="bi bi-box me-2"></i>Shipments
+          </NavLink>
           {/* <NavLink
             to=""
             className="nav-link text-white p-2 mb-2 rounded hover-bg-secondary"

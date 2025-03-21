@@ -228,7 +228,6 @@ const OpenShipment = () => {
   };
 
   const [error, setError] = useState({});
-  console.log(error);
 
   const validateForm = (section) => {
     const addressField = {

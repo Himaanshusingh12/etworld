@@ -34,6 +34,7 @@ const LocationInput = ({ placeholder, onSelect }) => {
       );
 
       setSuggestions(response.data.results);
+      console.log(response.data.results);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
     } finally {
@@ -274,7 +275,7 @@ const RateAndTransitTime = () => {
     }));
   };
 
-  console.log(errors);
+  console.log(calculationData);
 
   return (
     <>

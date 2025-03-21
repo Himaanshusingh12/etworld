@@ -89,8 +89,6 @@ const UploadDocuments = () => {
           },
         }
       );
-
-      console.log(res.data);
     } catch (error) {
       console.error("Upload failed:", error);
     }
@@ -144,8 +142,6 @@ const UploadDocuments = () => {
       value: "ETDPostshipment",
     },
   ];
-
-  console.log(formData);
 
   return (
     <>

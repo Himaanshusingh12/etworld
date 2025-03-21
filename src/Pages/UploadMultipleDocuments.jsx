@@ -97,7 +97,6 @@ const UploadMultipleDocuments = () => {
         shipDocumentType: "",
         destinationCountry: "",
       });
-      console.log(res);
     } catch (error) {
       console.error("Upload failed:", error.response?.data || error.message);
     }
@@ -126,7 +125,6 @@ const UploadMultipleDocuments = () => {
     { value: "OTHER", label: "Other" },
   ];
 
-  console.log(formData);
 
   return (
     <>

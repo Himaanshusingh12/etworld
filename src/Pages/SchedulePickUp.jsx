@@ -216,8 +216,6 @@ const SchedulePickUp = () => {
 
   const [errors, setErrors] = useState({});
 
-  console.log(errors);
-
   const validateForm = () => {
     const newErrors = {};
 

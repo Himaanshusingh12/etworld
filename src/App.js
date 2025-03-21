@@ -33,6 +33,7 @@ import OpenShipment from "./Pages/OpenShipment";
 import UploadDocuments from "./Pages/UploadDocuments";
 import UploadImage from "./Pages/UploadImage";
 import UploadMultipleDocuments from "./Pages/UploadMultipleDocuments";
+import ShipmentList from "./Pages/ShipmentList";
 
 function App() {
   const userLogin = Boolean(localStorage.getItem("user"));
@@ -135,6 +136,7 @@ function App() {
             <Route path="/upload" element={<UploadDocuments />} />
             <Route path="/upload-image" element={<UploadImage />} />
             <Route path="/upload-multiple" element={<UploadMultipleDocuments />} />
+            <Route path="/all-shipments" element={<ShipmentList />} />
           </Route>
 
           <Route path="*" element={<PNF />} />

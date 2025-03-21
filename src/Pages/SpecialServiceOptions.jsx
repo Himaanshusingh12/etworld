@@ -104,8 +104,6 @@ const SpecialServiceOptions = () => {
     }
   };
 
-  console.log(showDetail);
-
   return (
     <>
       <LogisticHeader />

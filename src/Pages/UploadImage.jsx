@@ -113,14 +113,10 @@ const UploadImage = () => {
           },
         }
       );
-
-      console.log(res.data);
     } catch (error) {
       console.error("Upload failed:", error);
     }
   };
-
-  console.log(errors);
 
   return (
     <>
