@@ -49,9 +49,11 @@ const initialState = {
       length: "",
       width: "",
       height: "",
-      units: "IN",
+      units: "CM",
     },
   ],
+  isEdit: false,
+  shipmentId: null,
 };
 
 const shippingSlice = createSlice({
@@ -183,6 +185,10 @@ const shippingSlice = createSlice({
         userId: user?.userid,
       };
     },
+    setIsEdit: (state, action) => {
+      state.isEdit = action.payload[0];
+      state.shipmentId = action.payload[1];
+    },
   },
 });
 
@@ -193,6 +199,7 @@ export const {
   deletePackage,
   handleChange,
   resetState,
+  setIsEdit,
 } = shippingSlice.actions;
 
 export default shippingSlice.reducer;

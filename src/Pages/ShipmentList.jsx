@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import LogisticSidepanel from "../Components/LogisticSidepanel";
 import LogisticHeader from "../Components/LogisticHeader";
-import axios from "axios";
 import { format } from "date-fns";
-import { setShipmentData } from "../Redux/Slices/ShipmentSlice";
+import { setIsEdit, setShipmentData } from "../Redux/Slices/ShipmentSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { DeleteShipment, getAllUserShipment } from "../AxiosConfig/AxiosConfig";
 
 const ShipmentList = () => {
   const [selectAll, setSelectAll] = useState(false);
@@ -19,12 +19,11 @@ const ShipmentList = () => {
   const navigate = useNavigate();
 
   const fetchShipmentList = async () => {
-    try { 
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/shipmentList/list`,
-        { userId: user.userid, search: debouncedSearch }
-      );
-      console.log("Fetched Shipment List:", res?.data?.data);
+    try {
+      const res = await getAllUserShipment({
+        userId: user.userid,
+        search: debouncedSearch,
+      });
       setList(res?.data?.data || []);
     } catch (error) {
       console.log("Error fetching shipment list:", error);
@@ -47,7 +46,6 @@ const ShipmentList = () => {
 
   const handleSelectAll = (e) => {
     const isChecked = e.target.checked;
-    console.log("Select All Clicked:", isChecked);
     setSelectAll(isChecked);
     setSelected(isChecked ? list.map((item) => item._id) : []);
   };
@@ -57,7 +55,6 @@ const ShipmentList = () => {
       const newSelected = prev.includes(id)
         ? prev.filter((itemId) => itemId !== id)
         : [...prev, id];
-      console.log("New Selected Items:", newSelected);
       setSelectAll(newSelected.length === list.length);
       return newSelected;
     });
@@ -66,7 +63,6 @@ const ShipmentList = () => {
   const handleClearSelection = () => {
     setSelected([]);
     setSelectAll(false);
-    console.log("Selection Cleared");
   };
 
   const handleEdit = () => {
@@ -78,6 +74,7 @@ const ShipmentList = () => {
           recipientsPhoneNumber: shipment.ShipmentInfo.recipientPhoneNumber,
           packages: shipment.ShipmentInfo.packages,
         };
+        dispatch(setIsEdit([true, shipment._id]));
         dispatch(setShipmentData(mappedData));
         navigate("/shipping");
       } else {
@@ -91,11 +88,7 @@ const ShipmentList = () => {
 
     try {
       const shipmentIdsString = selected.join(", ");
-      console.log("Deleting IDs:", shipmentIdsString);
-      const res = await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/shipmentList/delete`,
-        { data: { id: shipmentIdsString } }
-      );
+      const res = await DeleteShipment({ id: shipmentIdsString });
       if (res.data) {
         await fetchShipmentList();
         setSelected([]);
@@ -122,9 +115,11 @@ const ShipmentList = () => {
                 <button className="btn">
                   {selected.length} SHIPMENT SELECTED
                 </button>
-                <button onClick={handleEdit} className="btn">
-                  EDIT
-                </button>
+                {selected.length === 1 && (
+                  <button onClick={handleEdit} className="btn">
+                    EDIT
+                  </button>
+                )}
                 <button className="btn">REPEAT</button>
                 <button className="btn">APPLY SHIPMENT PROFILE</button>
                 <button onClick={handleDelete} className="btn">

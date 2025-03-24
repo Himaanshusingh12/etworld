@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import LogisticHeader from "../Components/LogisticHeader";
 import LogisticSidepanel from "../Components/LogisticSidepanel";
-import Select from "react-select"; // Fixed import
-import axios from "axios"; // Added axios import
+import Select from "react-select";
+import { getServicesAndSpecialServiceOptions } from "../AxiosConfig/AxiosConfig";
 
 const SpecialServiceOptions = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-
   const [showDetail, setShowDetail] = useState({
     senderPostalCode: "",
     senderCountryCode: "",
@@ -92,10 +91,7 @@ const SpecialServiceOptions = () => {
     }
     try {
       setLoading(true);
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/service-availability/SpecialService`,
-        showDetail
-      );
+      const response = await getServicesAndSpecialServiceOptions(showDetail);
       setResult(response.data.data);
     } catch (err) {
       console.error(err);

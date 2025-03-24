@@ -4,8 +4,8 @@ import LogisticSidepanel from "../Components/LogisticSidepanel";
 import Select from "react-select";
 import PhoneInput from "react-phone-input-2";
 import { City, Country, State } from "country-state-city";
-import axios from "axios";
 import { format } from "date-fns";
+import { CreateOpenShipment } from "../AxiosConfig/AxiosConfig";
 
 const OpenShipment = () => {
   const [loading, setLoading] = useState(false);
@@ -40,22 +40,22 @@ const OpenShipment = () => {
 
   const [openShipment, setOpenShipment] = useState({
     userId: user?.userid,
-    personName: "Jay",
-    phoneNumber: "+919876543210",
-    address: "456 Pine Street",
-    city: "San Francisco",
-    stateOrProvinceCode: "CA",
-    email: "priya.patel@gmail.com",
-    postalCode: "94107",
-    countryCode: "US",
-    recipientsPersonName: "Liam Johnson",
-    recipientsPhoneNumber: "+919876543210",
-    recipientsAddress: "321 Maple Drive",
-    recipientsEmail: "liam.johnson@gmail.com",
-    recipientsCity: "New York",
-    recipientsStateOrProvinceCode: "NY",
-    recipientsPostalCode: "10001",
-    recipientsCountryCode: "US",
+    personName: "",
+    phoneNumber: "",
+    address: "",
+    city: "",
+    stateOrProvinceCode: "",
+    email: "",
+    postalCode: "",
+    countryCode: "",
+    recipientsPersonName: "",
+    recipientsPhoneNumber: "",
+    recipientsAddress: "",
+    recipientsEmail: "",
+    recipientsCity: "",
+    recipientsStateOrProvinceCode: "",
+    recipientsPostalCode: "",
+    recipientsCountryCode: "",
     pickupType: "DROPOFF_AT_FEDEX_LOCATION",
     packagingType: "FEDEX_BOX",
     serviceType: "FEDEX_2_DAY",
@@ -63,10 +63,10 @@ const OpenShipment = () => {
       {
         packagesNo: "1",
         weightUnits: "LB",
-        weightValue: "5",
-        length: "12",
-        width: "8",
-        height: "6",
+        weightValue: "",
+        length: "",
+        width: "",
+        height: "",
         units: "IN",
       },
     ],
@@ -198,13 +198,10 @@ const OpenShipment = () => {
 
       for (const serviceType of serviceTypes) {
         try {
-          const response = await axios.post(
-            `${process.env.REACT_APP_BACKEND_URL}/api/fedex/openShipment`,
-            {
-              ...openShipment,
-              serviceType,
-            }
-          );
+          const response = await CreateOpenShipment({
+            ...openShipment,
+            serviceType,
+          });
 
           results.push({
             data: response.data?.data?.transactionShipments || null,

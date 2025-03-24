@@ -79,12 +79,13 @@ const UploadMultipleDocuments = () => {
       data.append("shipDocumentType", formData.shipDocumentType);
       data.append("originCountryCode", formData.originCountry);
       data.append("destinationCountryCode", formData.destinationCountry);
-
+      const token = localStorage.getItem("fedex_token");
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/fedex/upload/multiple`,
         data,
         {
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
@@ -124,7 +125,6 @@ const UploadMultipleDocuments = () => {
     { value: "PRO_FORMA_INVOICE", label: "Pro Forma Invoice" },
     { value: "OTHER", label: "Other" },
   ];
-
 
   return (
     <>

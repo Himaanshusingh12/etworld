@@ -72,7 +72,7 @@ const UploadDocuments = () => {
       data.append("shipDocumentType", formData.shipDocumentType);
       data.append("originCountry", formData.originCountry);
       data.append("destinationCountry", formData.destinationCountry);
-
+      const token = localStorage.getItem("fedex_token");
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/fedex/upload`,
         {
@@ -85,6 +85,7 @@ const UploadDocuments = () => {
         },
         {
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }

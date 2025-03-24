@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import LogisticSidepanel from "../Components/LogisticSidepanel";
 import LogisticHeader from "../Components/LogisticHeader";
 import Select from "react-select";
-import axios from "axios";
+import { getServicesAndPackagingOptions } from "../AxiosConfig/AxiosConfig";
 
 const ServicesAndPackagingOptions = () => {
   const [loading, setLoading] = useState(false);
@@ -44,13 +44,6 @@ const ServicesAndPackagingOptions = () => {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!showDetail.senderCity) {
-      newErrors.senderCity = "Sender city is required";
-    }
-    if (!showDetail.recipientCity) {
-      newErrors.recipientCity = "Recipient city is required";
-    }
     if (!showDetail.postalCode) {
       newErrors.postalCode = "Sender postal code is required";
     }
@@ -75,11 +68,7 @@ const ServicesAndPackagingOptions = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/service-availability/PackagingOptions`,
-        showDetail
-      );
-      console.log(response.data.data, "response");
+      const response = await getServicesAndPackagingOptions(showDetail);
       setResult(response.data.data);
     } catch (error) {
       console.error(error);

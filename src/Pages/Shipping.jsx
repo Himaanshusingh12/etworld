@@ -6,7 +6,6 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { City, Country, State } from "country-state-city";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { format } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
 import { resetState, setShipmentData } from "../Redux/Slices/ShipmentSlice";
@@ -16,6 +15,13 @@ import {
   deletePackage as deletePackageAction,
   calculateTotals,
 } from "../Redux/Slices/ShipmentSlice";
+import {
+  CreateShipment,
+  EditShipment,
+  getToken,
+  SavaShipmentData,
+} from "../AxiosConfig/AxiosConfig";
+import { useNavigate } from "react-router-dom";
 
 function Shipping() {
   const countryOptions = Country.getAllCountries().map((c) => ({
@@ -25,9 +31,11 @@ function Shipping() {
   }));
 
   const dispatch = useDispatch();
+  const user = JSON.parse(localStorage.getItem("user"));
   const ShipmentData = useSelector((state) => state.Shipping);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
+  const navigate = useNavigate()
 
   const stateOptions = selectedCountry?.value
     ? State.getStatesOfCountry(selectedCountry.value).map((s) => ({
@@ -281,66 +289,61 @@ function Shipping() {
 
       for (const serviceType of serviceTypes) {
         try {
-          const response = await axios.post(
-            `${process.env.REACT_APP_BACKEND_URL}/api/fedex/shipment/`,
-            {
-              userId: "456789",
-              personName: ShipmentData.senderPersonName,
-              phoneNumber: ShipmentData.senderPhoneNumber,
-              address: ShipmentData.senderAddress,
-              city: ShipmentData.senderCity,
-              postalCode: ShipmentData.senderPostalCode,
-              email: ShipmentData.senderEmail,
-              countryCode: ShipmentData.senderCountry,
-              stateOrProvinceCode: ShipmentData.senderStateOrProvinceCode,
-              residential: JSON.stringify(ShipmentData.senderIsResidential),
-              recipientsPersonName: ShipmentData.recipientsPersonName,
-              recipientsPhoneNumber: ShipmentData.recipientsPhoneNumber,
-              recipientsAddress: ShipmentData.recipientsAddress,
-              recipientsCity: ShipmentData.recipientsCity,
-              recipientsPostalCode: ShipmentData.recipientsPostalCode,
-              recipientsEmail: ShipmentData.recipientsEmail,
-              recipientsCountryCode: ShipmentData.recipientsCountry,
-              recipientsStateOrProvinceCode:
-                ShipmentData.recipientsStateOrProvinceCode,
-              recipientsResidential: JSON.stringify(
-                ShipmentData.recipientsIsResidential
-              ),
-              pickupType: ShipmentData.pickupType,
-              serviceType: serviceType,
-              packagingType: ShipmentData.packagingType,
-              paymentType: ShipmentData.paymentType,
-              totalWeight: ShipmentData.totalWeight,
-              totalPackages: ShipmentData.totalPackages,
+          const response = await CreateShipment({
+            userId: user?.userid,
+            personName: ShipmentData.senderPersonName,
+            phoneNumber: ShipmentData.senderPhoneNumber,
+            address: ShipmentData.senderAddress,
+            city: ShipmentData.senderCity,
+            postalCode: ShipmentData.senderPostalCode,
+            email: ShipmentData.senderEmail,
+            countryCode: ShipmentData.senderCountry,
+            stateOrProvinceCode: ShipmentData.senderStateOrProvinceCode,
+            residential: JSON.stringify(ShipmentData.senderIsResidential),
+            recipientsPersonName: ShipmentData.recipientsPersonName,
+            recipientsPhoneNumber: ShipmentData.recipientsPhoneNumber,
+            recipientsAddress: ShipmentData.recipientsAddress,
+            recipientsCity: ShipmentData.recipientsCity,
+            recipientsPostalCode: ShipmentData.recipientsPostalCode,
+            recipientsEmail: ShipmentData.recipientsEmail,
+            recipientsCountryCode: ShipmentData.recipientsCountry,
+            recipientsStateOrProvinceCode:
+              ShipmentData.recipientsStateOrProvinceCode,
+            recipientsResidential: JSON.stringify(
+              ShipmentData.recipientsIsResidential
+            ),
+            pickupType: ShipmentData.pickupType,
+            serviceType: serviceType,
+            packagingType: ShipmentData.packagingType,
+            paymentType: ShipmentData.paymentType,
+            totalWeight: ShipmentData.totalWeight,
+            totalPackages: ShipmentData.totalPackages,
 
-              ...(ShipmentData.senderCountry !==
-                ShipmentData.recipientsCountry && {
-                totalAmount: ShipmentData.totalAmount,
-                totalCurrency: ShipmentData.totalCurrency,
-                unitPriceAmount: ShipmentData.unitPriceAmount,
-                unitPriceCurrency: ShipmentData.unitPriceCurrency,
-                commodityDescription: ShipmentData.commodityDescription,
-                commodityQuantity: ShipmentData.commodityQuantity,
-                commodityQuantityUnits: ShipmentData.commodityQuantityUnits,
-                commodityCountryOfManufacture:
-                  ShipmentData.commodityCountryOfManufacture,
-                shipmentPurpose: ShipmentData.shipmentPurpose,
-                dutiesPaymentType: ShipmentData.dutiesPaymentType,
-                termsOfSale: ShipmentData.termsOfSale,
-              }),
+            ...(ShipmentData.senderCountry !==
+              ShipmentData.recipientsCountry && {
+              totalAmount: ShipmentData.totalAmount,
+              totalCurrency: ShipmentData.totalCurrency,
+              unitPriceAmount: ShipmentData.unitPriceAmount,
+              unitPriceCurrency: ShipmentData.unitPriceCurrency,
+              commodityDescription: ShipmentData.commodityDescription,
+              commodityQuantity: ShipmentData.commodityQuantity,
+              commodityQuantityUnits: ShipmentData.commodityQuantityUnits,
+              commodityCountryOfManufacture:
+                ShipmentData.commodityCountryOfManufacture,
+              shipmentPurpose: ShipmentData.shipmentPurpose,
+              dutiesPaymentType: ShipmentData.dutiesPaymentType,
+              termsOfSale: ShipmentData.termsOfSale,
+            }),
 
-              packages: ShipmentData.packages.map((pkg) => ({
-                weightValue: pkg.weight,
-                weightUnits: pkg.weightUnit,
-                length: pkg.length,
-                width: pkg.width,
-                height: pkg.height,
-                units: pkg.units,
-              })),
-            }
-          );
-
-          console.log(`Response for ${serviceType}:`, response.data);
+            packages: ShipmentData.packages.map((pkg) => ({
+              weightValue: pkg.weight,
+              weightUnits: pkg.weightUnit,
+              length: pkg.length,
+              width: pkg.width,
+              height: pkg.height,
+              units: pkg.units,
+            })),
+          });
           results.push({
             data: response.data || null,
           });
@@ -445,11 +448,16 @@ function Shipping() {
 
   const handleSave = async () => {
     try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/shipmentList/`,
-        ShipmentData
-      );
-      console.log(res);
+      if (ShipmentData.isEdit === true) {
+        const res = await EditShipment({
+          shipmentId: ShipmentData.shipmentId,
+          ShipmentData,
+        });
+        console.log(res.data);
+      } else {
+        const res = await SavaShipmentData(ShipmentData);
+        console.log(res.data);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -473,8 +481,29 @@ function Shipping() {
       label: "Use scheduled pickup",
     },
   ];
-  
-  console.log(ShipmentData);
+
+  const token = async () => {
+    try {
+      if (!user.userid) {
+        console.log("User id not found please login");
+        return;
+      }
+      navigate("/");
+      const res = await getToken({
+        data: user?.userid,
+      });
+      if (res?.data?.data) {
+        localStorage.setItem("fedex_token", JSON.stringify(res.data.data));
+      }
+    } catch (error) {
+      console.log("somting went wrong");
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!localStorage.getItem("fedex_token")) token();
+  }, []);
 
   return (
     <>
@@ -1269,6 +1298,33 @@ function Shipping() {
                           const totalCharge =
                             item?.data?.data?.transactionShipments?.[0]
                               ?.pieceResponses?.[0]?.netRateAmount;
+
+                          const totalNetFedExCharge =
+                            item?.data?.data?.transactionShipments?.[0]
+                              ?.completedShipmentDetail?.shipmentRating
+                              ?.shipmentRateDetails?.[0].totalNetFedExCharge;
+
+                          const serviceTypeLabels = {
+                            INTERNATIONAL_FIRST: "International First",
+                            FEDEX_INTERNATIONAL_PRIORITY:
+                              "FedEx International Priority",
+                            FEDEX_INTERNATIONAL_PRIORITY_EXPRESS:
+                              "FedEx International Priority Express",
+                            INTERNATIONAL_ECONOMY: "International Economy",
+                            FEDEX_INTERNATIONAL_GROUND:
+                              "FedEx International Ground",
+                            FEDEX_GROUND: "FedEx Ground",
+                            FEDEX_2_DAY: "FedEx 2 Day",
+                            FEDEX_2_DAY_AM: "FedEx 2 Day AM",
+                            FEDEX_EXPRESS_SAVER: "FedEx Express Saver",
+                            STANDARD_OVERNIGHT: "Standard Overnight",
+                          };
+
+                          const serviceType =
+                            serviceTypeLabels[
+                              item?.data?.data?.ShipmentInfo?.serviceType
+                            ] || "Unknown Service";
+
                           return (
                             <div>
                               {item?.data?.data && (
@@ -1276,14 +1332,20 @@ function Shipping() {
                                   key={index}
                                   className="my-3 d-flex justify-content-between border p-3"
                                 >
-                                  <div>
+                                  <div className="d-flex flex-column">
                                     {deliveryDatestamp &&
                                       format(
                                         new Date(deliveryDatestamp),
                                         "MMMM dd, yyyy hh:mm a"
                                       )}
+                                    <span>{serviceType}</span>
                                   </div>
-                                  <div>${totalCharge ?? "0.00"}</div>
+                                  <div>
+                                    $
+                                    {totalCharge
+                                      ? totalCharge
+                                      : totalNetFedExCharge}
+                                  </div>
                                 </div>
                               )}
                             </div>
