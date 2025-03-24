@@ -6,7 +6,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { City, Country, State } from "country-state-city";
 import { format } from "date-fns";
-import axios from "axios";
+import { PickUp } from "../AxiosConfig/AxiosConfig";
 
 const SchedulePickUp = () => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -216,21 +216,15 @@ const SchedulePickUp = () => {
 
   const [errors, setErrors] = useState({});
 
-  console.log(errors);
-
   const validateForm = () => {
     const newErrors = {};
 
     if (!schedulePickUp.contactName.trim()) {
       newErrors.contactName = "Contact name is required";
-    } else if (schedulePickUp.contactName.trim().length < 2) {
-      newErrors.contactName = "Contact name must be at least 2 characters";
     }
 
     if (!schedulePickUp.companyName.trim()) {
       newErrors.companyName = "Company name is required";
-    } else if (schedulePickUp.companyName.trim().length < 2) {
-      newErrors.companyName = "Company name must be at least 2 characters";
     }
 
     if (!schedulePickUp.phoneNumber) {
@@ -262,15 +256,12 @@ const SchedulePickUp = () => {
 
     if (!schedulePickUp.city) {
       newErrors.city = "City is required";
-    } else if (schedulePickUp.city.trim().length < 2) {
+    } else if (schedulePickUp.city.trim()) {
       newErrors.city = "City name must be at least 2 characters";
     }
 
-    if (!schedulePickUp.postalCode.trim()) {
+    if (!schedulePickUp.postalCode) {
       newErrors.postalCode = "Postal code is required";
-    } else if (!/^\d{5}(-\d{4})?$/.test(schedulePickUp.postalCode.trim())) {
-      newErrors.postalCode =
-        "Postal code must be in format 12345 or 12345-6789";
     }
 
     if (!schedulePickUp.stateOrProvinceCode) {
@@ -283,20 +274,10 @@ const SchedulePickUp = () => {
 
     if (!schedulePickUp.packages) {
       newErrors.packages = "Number of packages is required";
-    } else if (
-      isNaN(schedulePickUp.packages) ||
-      Number(schedulePickUp.packages) <= 0
-    ) {
-      newErrors.packages = "Number of packages must be a positive number";
     }
 
     if (!schedulePickUp.totalWeight) {
       newErrors.totalWeight = "Total weight is required";
-    } else if (
-      isNaN(schedulePickUp.totalWeight) ||
-      Number(schedulePickUp.totalWeight) <= 0
-    ) {
-      newErrors.totalWeight = "Total weight must be a positive number";
     }
 
     if (!pickupDetails.pickupDate) {
@@ -333,10 +314,7 @@ const SchedulePickUp = () => {
     }
     try {
       setLoading(true);
-      const response = await axios.post(
-        "http://localhost:3000/api/fedex/pickUp/",
-        schedulePickUp
-      );
+      const response = await PickUp(schedulePickUp);
       setResultData(response.data);
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);

@@ -72,9 +72,9 @@ const UploadDocuments = () => {
       data.append("shipDocumentType", formData.shipDocumentType);
       data.append("originCountry", formData.originCountry);
       data.append("destinationCountry", formData.destinationCountry);
-
+      const token = localStorage.getItem("fedex_token");
       const res = await axios.post(
-        "http://localhost:3000/api/fedex/upload",
+        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/upload`,
         {
           file: formData.file,
           fileName: formData.fileName,
@@ -85,12 +85,11 @@ const UploadDocuments = () => {
         },
         {
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
       );
-
-      console.log(res.data);
     } catch (error) {
       console.error("Upload failed:", error);
     }
@@ -144,8 +143,6 @@ const UploadDocuments = () => {
       value: "ETDPostshipment",
     },
   ];
-
-  console.log(formData);
 
   return (
     <>

@@ -37,13 +37,6 @@ const UploadImage = () => {
     { value: "OTHER", label: "Other" },
   ];
 
-  // Assuming these are your ETD options - adjust as needed
-  const ETDOptions = [
-    { value: "STANDARD", label: "Standard" },
-    { value: "EXPRESS", label: "Express" },
-    { value: "OVERNIGHT", label: "Overnight" },
-  ];
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setFormData({
@@ -103,24 +96,21 @@ const UploadImage = () => {
       data.append("shipDocumentType", formData.shipDocumentType);
       data.append("originCountryCode", formData.originCountry);
       data.append("destinationCountryCode", formData.destinationCountry);
-
+      const token = localStorage.getItem("fedex_token");
       const res = await axios.post(
-        "http://localhost:3000/api/fedex/upload/image",
+        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/upload/image`,
         data,
         {
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
       );
-
-      console.log(res.data);
     } catch (error) {
       console.error("Upload failed:", error);
     }
   };
-
-  console.log(errors);
 
   return (
     <>

@@ -3,6 +3,7 @@ import LogisticHeader from "../Components/LogisticHeader";
 import LogisticSidepanel from "../Components/LogisticSidepanel";
 import Select from "react-select";
 import axios from "axios";
+import { getRateAndTransitTime } from "../AxiosConfig/AxiosConfig";
 
 const LocationInput = ({ placeholder, onSelect }) => {
   const [query, setQuery] = useState("");
@@ -17,9 +18,7 @@ const LocationInput = ({ placeholder, onSelect }) => {
       setSuggestions([]);
       return;
     }
-
     setLoading(true);
-
     try {
       const apiKey = "8fcfddceccc64e24bdaa5fe500984adc";
       const response = await axios.get(
@@ -34,6 +33,7 @@ const LocationInput = ({ placeholder, onSelect }) => {
       );
 
       setSuggestions(response.data.results);
+      console.log(response.data.results);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
     } finally {
@@ -89,7 +89,7 @@ const RateAndTransitTime = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [calculationData, setCalculationData] = useState({
-    user: user?.userid,
+    user: user.userid,
     senderCity: "",
     senderPostalCode: "",
     senderCountryCode: "",
@@ -100,13 +100,13 @@ const RateAndTransitTime = () => {
     serviceType: "FEDEX_GROUND",
     packagingType: "YOUR_PACKAGING",
     weightUnits: "KG",
-    shipDateTime: "2025-03-11",
+    shipDateTime: "",
     packagesNo: 1,
-    weightValue: 10,
-    length: 18,
-    width: 12,
+    weightValue: "",
+    length: "",
+    width: "",
     residential: false,
-    height: 8,
+    height: "",
     dimensionUnits: "IN",
   });
 
@@ -180,33 +180,55 @@ const RateAndTransitTime = () => {
     if (!validateForm()) {
       return;
     }
+    setLoading(true);
+    const serviceTypes = [
+      "FEDEX_GROUND",
+      "FEDEX_2_DAY",
+      "FEDEX_2_DAY_AM",
+      "FEDEX_EXPRESS_SAVER",
+    ];
+
     try {
-      setLoading(true);
-      const serviceTypes = [
-        "FEDEX_GROUND",
-        "FEDEX_2_DAY",
-        "FEDEX_2_DAY_AM",
-        "FEDEX_EXPRESS_SAVER",
-      ];
-      let results = [];
-      for (const serviceType of serviceTypes) {
+      const ratePromises = serviceTypes.map(async (serviceType) => {
         try {
-          const response = await axios.post(
-            "http://localhost:3000/api/fedex/rate-transit",
-            {
-              ...calculationData,
-              serviceType,
-            }
-          );
-          results.push({ data: response?.data?.data });
+          const response = await getRateAndTransitTime({
+            ...calculationData,
+            serviceType,
+          });
+
+          if (!response?.data?.data) {
+            throw new Error(`Invalid response for ${serviceType}`);
+          }
+          return {
+            serviceType,
+            data: response.data.data,
+            error: null,
+          };
         } catch (error) {
           console.error(`Error fetching data for ${serviceType}:`, error);
-          results.push({ serviceType, error: error.message });
+          return {
+            serviceType,
+            data: null,
+            error: error.message || "Unknown error",
+          };
         }
+      });
+      const results = await Promise.all(ratePromises);
+      setResultData(results);
+      results.forEach((result) => {
+        if (!result.error) {
+          console.log(`Rate for ${result.serviceType}:`, result.data);
+        }
+      });
+      if (results.every((result) => result.error)) {
+        throw new Error("All rate requests failed");
       }
-      setResultData([...results]);
     } catch (error) {
-      console.error("Unexpected error:", error);
+      console.error("Unexpected error in handleShowRate:", error);
+      setResultData((prev) => [
+        ...prev,
+        { serviceType: null, data: null, error: error.message },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -273,8 +295,6 @@ const RateAndTransitTime = () => {
       recipientPostalCode: "",
     }));
   };
-
-  console.log(errors);
 
   return (
     <>

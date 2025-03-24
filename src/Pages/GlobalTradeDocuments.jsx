@@ -3,7 +3,7 @@ import LogisticHeader from "../Components/LogisticHeader";
 import LogisticSidepanel from "../Components/LogisticSidepanel";
 import Select from "react-select";
 import { Country } from "country-state-city";
-import axios from "axios";
+import { getGlobalTradeOptions } from "../AxiosConfig/AxiosConfig";
 
 const GlobalTradeDocuments = () => {
   const [loading, setLoading] = useState(false);
@@ -45,10 +45,7 @@ const GlobalTradeDocuments = () => {
     }
     setLoading(true);
     try {
-      const response = await axios.post(
-        `http://localhost:3000/api/fedex/global-trade`,
-        globalDocuments
-      );
+      const response = await getGlobalTradeOptions(globalDocuments);
       setResult(response.data.data);
     } catch (error) {
       console.error("Error fetching rate:", error);
@@ -56,6 +53,8 @@ const GlobalTradeDocuments = () => {
       setLoading(false);
     }
   };
+
+  console.log(result)
 
   return (
     <>

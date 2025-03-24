@@ -5,9 +5,23 @@ import Select from "react-select";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { City, Country, State } from "country-state-city";
-import { useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
+import { useDispatch, useSelector } from "react-redux";
+import { resetState, setShipmentData } from "../Redux/Slices/ShipmentSlice";
+import { handleChange as handleChangeAction } from "../Redux/Slices/ShipmentSlice";
+import {
+  addPackage as addPackageAction,
+  deletePackage as deletePackageAction,
+  calculateTotals,
+} from "../Redux/Slices/ShipmentSlice";
+import {
+  CreateShipment,
+  EditShipment,
+  getToken,
+  SavaShipmentData,
+} from "../AxiosConfig/AxiosConfig";
+import { useNavigate } from "react-router-dom";
 
 function Shipping() {
   const countryOptions = Country.getAllCountries().map((c) => ({
@@ -16,8 +30,12 @@ function Shipping() {
     code: c.phonecode,
   }));
 
+  const dispatch = useDispatch();
+  const user = JSON.parse(localStorage.getItem("user"));
+  const ShipmentData = useSelector((state) => state.Shipping);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
+  const navigate = useNavigate()
 
   const stateOptions = selectedCountry?.value
     ? State.getStatesOfCountry(selectedCountry.value).map((s) => ({
@@ -36,86 +54,21 @@ function Shipping() {
         )
       : [];
 
-  const [currentSection, setCurrentSection] = useState(1);
+  useEffect(() => {
+    dispatch(calculateTotals());
+  }, [ShipmentData]);
 
   const addPackage = () => {
-    setShipmentData((prevState) => ({
-      ...prevState,
-      packages: [
-        ...prevState.packages,
-        {
-          packagesNo: "1",
-          weight: "",
-          weightUnit: "KG",
-          length: "",
-          width: "",
-          height: "",
-          units: "CM",
-        },
-      ],
-    }));
+    dispatch(addPackageAction());
+    dispatch(calculateTotals());
   };
 
   const deletePackage = (index) => {
-    if (ShipmentData.packages.length > 1) {
-      setShipmentData((prevState) => ({
-        ...prevState,
-        packages: prevState.packages.filter((_, i) => i !== index),
-      }));
-    }
+    dispatch(deletePackageAction(index));
+    dispatch(calculateTotals());
   };
 
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const [ShipmentData, setShipmentData] = useState({
-    userId: user?.userid,
-    recipientsPersonName: "Olivia Brown",
-    recipientsPhoneNumber: "7897987899",
-    recipientsEmail: "meet@gmail.com",
-    recipientsCountry: "US",
-    recipientsAddress: "456 Cedar Lane",
-    recipientsPostalCode: "77002",
-    recipientsStateOrProvinceCode: "TX",
-    recipientsCity: "Houston",
-    recipientsIsResidential: false,
-    recipientsIsSave: false,
-    senderPersonName: "Meet",
-    senderPhoneNumber: "7897986545",
-    senderEmail: "meet@gmail.com",
-    senderCountry: "US",
-    senderAddress: "123 Maple Road",
-    senderPostalCode: "02108",
-    senderStateOrProvinceCode: "MA",
-    senderCity: "Boston",
-    senderIsResidential: false,
-    senderIsSave: false,
-    paymentType: "SENDER",
-    serviceType: "FEDEX_2_DAY",
-    packagingType: "FEDEX_BOX",
-    pickupType: "DROPOFF_AT_FEDEX_LOCATION",
-    totalAmount: "",
-    totalCurrency: "USD",
-    unitPriceAmount: "",
-    unitPriceCurrency: "USD",
-    commodityDescription: "",
-    commodityQuantity: "1",
-    commodityQuantityUnits: "LTR",
-    commodityCountryOfManufacture: "",
-    shipmentPurpose: "",
-    dutiesPaymentType: "",
-    termsOfSale: "",
-    packages: [
-      {
-        packagesNo: "8",
-        weight: "10",
-        weightUnit: "LB",
-        length: "10",
-        width: "8",
-        height: "6",
-        units: "IN",
-      },
-    ],
-  });
+  const [currentSection, setCurrentSection] = useState(1);
 
   const handleChange = (e, index) => {
     const { name, value, type, checked } = e.target;
@@ -130,45 +83,66 @@ function Shipping() {
         "units",
       ].includes(name)
     ) {
-      setShipmentData((prev) => ({
-        ...prev,
-        packages: prev.packages.map((pkg, i) =>
-          i === index
-            ? {
-                ...pkg,
-                [name]: type === "checkbox" ? checked : value,
-              }
-            : pkg
-        ),
-      }));
+      dispatch(
+        handleChangeAction({
+          name: `packages.${name}`,
+          value: type === "checkbox" ? checked : value,
+          packageIndex: index,
+        })
+      );
+      if (name === "weightUnit") {
+        dispatch(
+          handleChangeAction({
+            name: "packages.units",
+            value: value === "KG" ? "CM" : "IN",
+            packageIndex: index,
+          })
+        );
+      } else if (name === "units") {
+        dispatch(
+          handleChangeAction({
+            name: "packages.weightUnit",
+            value: value === "CM" ? "KG" : "LB",
+            packageIndex: index,
+          })
+        );
+      }
     } else {
-      setShipmentData((prev) => ({
-        ...prev,
-        [name]: type === "checkbox" ? checked : value,
-      }));
+      dispatch(
+        handleChangeAction({
+          name,
+          value: type === "checkbox" ? checked : value,
+        })
+      );
     }
   };
 
   const handleSelectChange = (event) => {
     const { name, value } = event.target;
-    setShipmentData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    dispatch(
+      handleChangeAction({
+        name,
+        value,
+      })
+    );
   };
 
   const handleDropdownChange = (selectedOption, { name }) => {
-    setShipmentData((prevData) => ({
-      ...prevData,
-      [name]: selectedOption ? selectedOption.value : "",
-    }));
+    dispatch(
+      handleChangeAction({
+        name,
+        value: selectedOption ? selectedOption.value : "",
+      })
+    );
   };
 
   const updateShipmentField = (fieldName) => (selectedOption) => {
-    setShipmentData((prev) => ({
-      ...prev,
-      [fieldName]: selectedOption?.value ?? "",
-    }));
+    dispatch(
+      handleChangeAction({
+        name: fieldName,
+        value: selectedOption ? selectedOption.value : "",
+      })
+    );
 
     if (fieldName.includes("Country")) {
       setSelectedCountry(selectedOption);
@@ -239,8 +213,8 @@ function Shipping() {
   ];
 
   const paymentTypeOptions = [
-    { label: "Senders", value: "SENDERS" },
-    { label: "Receivers", value: "RECEIVERS" },
+    { label: "Sender", value: "SENDER" },
+    { label: "Receiver", value: "RECIPIENT" },
     { label: "Third Party", value: "THIRD_PARTY" },
     { label: "Collect", value: "COLLECT" },
   ];
@@ -294,7 +268,6 @@ function Shipping() {
   const handleShipment = async () => {
     try {
       setLoading(true);
-
       const serviceTypes =
         ShipmentData.senderCountry !== ShipmentData.recipientsCountry
           ? [
@@ -316,65 +289,61 @@ function Shipping() {
 
       for (const serviceType of serviceTypes) {
         try {
-          const response = await axios.post(
-            "http://localhost:3000/api/fedex/shipment/",
-            {
-              userId: "456789",
-              personName: ShipmentData.senderPersonName,
-              phoneNumber: ShipmentData.senderPhoneNumber,
-              address: ShipmentData.senderAddress,
-              city: ShipmentData.senderCity,
-              postalCode: ShipmentData.senderPostalCode,
-              email: ShipmentData.senderEmail,
-              countryCode: ShipmentData.senderCountry,
-              stateOrProvinceCode: ShipmentData.senderStateOrProvinceCode,
-              residential: JSON.stringify(ShipmentData.senderIsResidential),
-              recipientsPersonName: ShipmentData.recipientsPersonName,
-              recipientsPhoneNumber: ShipmentData.recipientsPhoneNumber,
-              recipientsAddress: ShipmentData.recipientsAddress,
-              recipientsCity: ShipmentData.recipientsCity,
-              recipientsPostalCode: ShipmentData.recipientsPostalCode,
-              recipientsEmail: ShipmentData.recipientsEmail,
-              recipientsCountryCode: ShipmentData.recipientsCountry,
-              recipientsStateOrProvinceCode:
-                ShipmentData.recipientsStateOrProvinceCode,
-              recipientsResidential: JSON.stringify(
-                ShipmentData.recipientsIsResidential
-              ),
-              pickupType: ShipmentData.pickupType,
-              serviceType: serviceType,
-              packagingType: ShipmentData.packagingType,
-              paymentType: ShipmentData.paymentType,
-              totalWeight: ShipmentData.packages.weight,
+          const response = await CreateShipment({
+            userId: user?.userid,
+            personName: ShipmentData.senderPersonName,
+            phoneNumber: ShipmentData.senderPhoneNumber,
+            address: ShipmentData.senderAddress,
+            city: ShipmentData.senderCity,
+            postalCode: ShipmentData.senderPostalCode,
+            email: ShipmentData.senderEmail,
+            countryCode: ShipmentData.senderCountry,
+            stateOrProvinceCode: ShipmentData.senderStateOrProvinceCode,
+            residential: JSON.stringify(ShipmentData.senderIsResidential),
+            recipientsPersonName: ShipmentData.recipientsPersonName,
+            recipientsPhoneNumber: ShipmentData.recipientsPhoneNumber,
+            recipientsAddress: ShipmentData.recipientsAddress,
+            recipientsCity: ShipmentData.recipientsCity,
+            recipientsPostalCode: ShipmentData.recipientsPostalCode,
+            recipientsEmail: ShipmentData.recipientsEmail,
+            recipientsCountryCode: ShipmentData.recipientsCountry,
+            recipientsStateOrProvinceCode:
+              ShipmentData.recipientsStateOrProvinceCode,
+            recipientsResidential: JSON.stringify(
+              ShipmentData.recipientsIsResidential
+            ),
+            pickupType: ShipmentData.pickupType,
+            serviceType: serviceType,
+            packagingType: ShipmentData.packagingType,
+            paymentType: ShipmentData.paymentType,
+            totalWeight: ShipmentData.totalWeight,
+            totalPackages: ShipmentData.totalPackages,
 
-              ...(ShipmentData.senderCountry !==
-                ShipmentData.recipientsCountry && {
-                totalAmount: ShipmentData.totalAmount,
-                totalCurrency: ShipmentData.totalCurrency,
-                unitPriceAmount: ShipmentData.unitPriceAmount,
-                unitPriceCurrency: ShipmentData.unitPriceCurrency,
-                commodityDescription: ShipmentData.commodityDescription,
-                commodityQuantity: ShipmentData.commodityQuantity,
-                commodityQuantityUnits: ShipmentData.commodityQuantityUnits,
-                commodityCountryOfManufacture:
-                  ShipmentData.commodityCountryOfManufacture,
-                shipmentPurpose: ShipmentData.shipmentPurpose,
-                dutiesPaymentType: ShipmentData.dutiesPaymentType,
-                termsOfSale: ShipmentData.termsOfSale,
-              }),
+            ...(ShipmentData.senderCountry !==
+              ShipmentData.recipientsCountry && {
+              totalAmount: ShipmentData.totalAmount,
+              totalCurrency: ShipmentData.totalCurrency,
+              unitPriceAmount: ShipmentData.unitPriceAmount,
+              unitPriceCurrency: ShipmentData.unitPriceCurrency,
+              commodityDescription: ShipmentData.commodityDescription,
+              commodityQuantity: ShipmentData.commodityQuantity,
+              commodityQuantityUnits: ShipmentData.commodityQuantityUnits,
+              commodityCountryOfManufacture:
+                ShipmentData.commodityCountryOfManufacture,
+              shipmentPurpose: ShipmentData.shipmentPurpose,
+              dutiesPaymentType: ShipmentData.dutiesPaymentType,
+              termsOfSale: ShipmentData.termsOfSale,
+            }),
 
-              packages: ShipmentData.packages.map((pkg) => ({
-                weightValue: pkg.weight,
-                weightUnits: pkg.weightUnit,
-                length: pkg.length,
-                width: pkg.width,
-                height: pkg.height,
-                units: pkg.units,
-              })),
-            }
-          );
-
-          console.log(`Response for ${serviceType}:`, response.data);
+            packages: ShipmentData.packages.map((pkg) => ({
+              weightValue: pkg.weight,
+              weightUnits: pkg.weightUnit,
+              length: pkg.length,
+              width: pkg.width,
+              height: pkg.height,
+              units: pkg.units,
+            })),
+          });
           results.push({
             data: response.data || null,
           });
@@ -477,6 +446,65 @@ function Shipping() {
     }
   };
 
+  const handleSave = async () => {
+    try {
+      if (ShipmentData.isEdit === true) {
+        const res = await EditShipment({
+          shipmentId: ShipmentData.shipmentId,
+          ShipmentData,
+        });
+        console.log(res.data);
+      } else {
+        const res = await SavaShipmentData(ShipmentData);
+        console.log(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleResetForm = () => {
+    dispatch(resetState());
+  };
+
+  const PickUpOption = [
+    {
+      value: "DROPOFF_AT_FEDEX_LOCATION",
+      label: "Drop off at FedEx location",
+    },
+    {
+      value: "CONTACT_FEDEX_TO_SCHEDULE",
+      label: "Contact FedEx to schedule pickup",
+    },
+    {
+      value: "USE_SCHEDULED_PICKUP",
+      label: "Use scheduled pickup",
+    },
+  ];
+
+  const token = async () => {
+    try {
+      if (!user.userid) {
+        console.log("User id not found please login");
+        return;
+      }
+      navigate("/");
+      const res = await getToken({
+        data: user?.userid,
+      });
+      if (res?.data?.data) {
+        localStorage.setItem("fedex_token", JSON.stringify(res.data.data));
+      }
+    } catch (error) {
+      console.log("somting went wrong");
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!localStorage.getItem("fedex_token")) token();
+  }, []);
+
   return (
     <>
       <LogisticHeader />
@@ -484,7 +512,6 @@ function Shipping() {
         <div className="flex-shrink-0">
           <LogisticSidepanel />
         </div>
-        {/* from here main content start */}
         <div>
           <header className="bg-light py-2 border-bottom">
             <div className="container d-flex justify-content-between align-items-center">
@@ -496,18 +523,19 @@ function Shipping() {
                 </select>
               </div>
               <div>
-                <a href="#" className="text-primary me-3">
+                <button onClick={handleSave} className="btn text-primary me-3">
                   SAVE
-                </a>
-                <a href="#" className="text-primary me-3">
+                </button>
+                <button
+                  onClick={handleResetForm}
+                  className="btn text-primary me-3"
+                >
                   RESET FORM
-                </a>
-                <a href="#" className="text-primary me-3">
+                </button>
+                <button className="btn text-primary me-3">
                   SAVE AS SHIPMENT PROFILE
-                </a>
-                <a href="#" className="text-primary">
-                  VIEWS
-                </a>
+                </button>
+                <button className="btn text-primary">VIEWS</button>
               </div>
             </div>
           </header>
@@ -516,6 +544,183 @@ function Shipping() {
               <div className="col-md-8 ps-5">
                 {currentSection === 1 && (
                   <>
+                    <div>
+                      <h5 className="fw-bold text-primary">
+                        <i className="fa fa-user-circle"></i> Sender
+                      </h5>
+                      <p className="fs-5">Who is Sending the shipment?</p>
+                      <div className="mb-3">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Search in Address Book"
+                        />
+                      </div>
+                      <h6>Contact details</h6>
+                      <div className="mb-2">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Contact Name *"
+                          name="senderPersonName"
+                          value={ShipmentData.senderPersonName}
+                          onChange={handleChange}
+                        />
+                        {errors.senderPersonName && (
+                          <div className="text-danger">
+                            {errors.senderPersonName}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mb-2">
+                        <PhoneInput
+                          country={ShipmentData.senderCountry?.toLowerCase()}
+                          value={ShipmentData.senderPhoneNumber}
+                          onChange={(value) =>
+                            dispatch(
+                              setShipmentData({
+                                senderPhoneNumber: value,
+                              })
+                            )
+                          }
+                          inputClass="form-control"
+                          name="senderPhoneNumber"
+                        />
+                        {errors.senderPhoneNumber && (
+                          <div className="text-danger">
+                            {errors.senderPhoneNumber}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mb-2">
+                        <input
+                          type="email"
+                          className="form-control"
+                          placeholder="Email"
+                          name="senderEmail"
+                          value={ShipmentData.senderEmail}
+                          onChange={handleChange}
+                        />
+                        {errors.senderEmail && (
+                          <div className="text-danger">
+                            {errors.senderEmail}
+                          </div>
+                        )}
+                      </div>
+                      <h6>Address</h6>
+                      <div className="mb-2">
+                        <Select
+                          options={countryOptions}
+                          placeholder="Select Country/Territory"
+                          value={countryOptions.find(
+                            (option) =>
+                              option.value === ShipmentData.senderCountry
+                          )}
+                          onChange={handleSenderCountryChange}
+                        />
+                        {errors.senderCountry && (
+                          <div className="text-danger">
+                            {errors.senderCountry}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mb-2">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Address Line 1 *"
+                          name="senderAddress"
+                          value={ShipmentData.senderAddress}
+                          onChange={handleChange}
+                        />
+                        {errors.senderAddress && (
+                          <div className="text-danger">
+                            {errors.senderAddress}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mb-2">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Postal Code"
+                          name="senderPostalCode"
+                          value={ShipmentData.senderPostalCode}
+                          onChange={handleChange}
+                        />
+                        {errors.senderPostalCode && (
+                          <div className="text-danger">
+                            {errors.senderPostalCode}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mb-2">
+                        <Select
+                          options={stateOptions}
+                          placeholder="Select State"
+                          value={stateOptions.find(
+                            (option) =>
+                              option.value ===
+                              ShipmentData.senderStateOrProvinceCode
+                          )}
+                          onChange={handleSenderStateChange}
+                        />
+                        {errors.senderStateOrProvinceCode && (
+                          <div className="text-danger">
+                            {errors.senderStateOrProvinceCode}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mb-2">
+                        <Select
+                          options={cityOptions}
+                          placeholder="Select City *"
+                          value={cityOptions.find(
+                            (option) => option.value === ShipmentData.senderCity
+                          )}
+                          onChange={handleSenderCityChange}
+                        />
+                        {errors.senderCity && (
+                          <div className="text-danger">{errors.senderCity}</div>
+                        )}
+                      </div>
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="senderResidential"
+                          name="senderIsResidential"
+                          checked={ShipmentData.senderIsResidential}
+                          onChange={handleChange}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="residentialAddress"
+                        >
+                          This is a residential address
+                        </label>
+                      </div>
+                      <div className="form-check mb-3">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="saveSender"
+                          name="senderIsSave"
+                          checked={ShipmentData.senderIsSave}
+                          onChange={handleChange}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="saveSender"
+                        >
+                          Save as new sender in
+                          <select className="form-select d-inline w-auto">
+                            <option selected>Personal Address Book</option>
+                          </select>
+                        </label>
+                      </div>
+                      <hr className="my-4 border-3 border-primary" />
+                    </div>
                     <div>
                       <h5 className="fw-bold text-primary">
                         <i className="fa fa-user-circle"></i> Receiver
@@ -549,10 +754,11 @@ function Shipping() {
                           country={ShipmentData.recipientsCountry?.toLowerCase()}
                           value={ShipmentData.recipientsPhoneNumber}
                           onChange={(value) =>
-                            setShipmentData((prev) => ({
-                              ...prev,
-                              recipientsPhoneNumber: value,
-                            }))
+                            dispatch(
+                              setShipmentData({
+                                recipientsPhoneNumber: value,
+                              })
+                            )
                           }
                           inputClass="form-control"
                         />
@@ -693,182 +899,6 @@ function Shipping() {
                           </select>
                         </label>
                       </div>
-                      <hr className="my-4 border-3 border-primary" />
-                    </div>
-                    <div>
-                      <h5 className="fw-bold text-primary">
-                        <i className="fa fa-user-circle"></i> Sender
-                      </h5>
-                      <p className="fs-5">Who is Sending the shipment?</p>
-                      <div className="mb-3">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Search in Address Book"
-                        />
-                      </div>
-                      <h6>Contact details</h6>
-                      <div className="mb-2">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Contact Name *"
-                          name="senderPersonName"
-                          value={ShipmentData.senderPersonName}
-                          onChange={handleChange}
-                        />
-                        {errors.senderPersonName && (
-                          <div className="text-danger">
-                            {errors.senderPersonName}
-                          </div>
-                        )}
-                      </div>
-                      <div className="mb-2">
-                        <PhoneInput
-                          country={ShipmentData.senderCountry?.toLowerCase()}
-                          value={ShipmentData.senderPhoneNumber}
-                          onChange={(value) =>
-                            setShipmentData((prev) => ({
-                              ...prev,
-                              senderPhoneNumber: value,
-                            }))
-                          }
-                          inputClass="form-control"
-                          name="senderPhoneNumber"
-                        />
-                        {errors.senderPhoneNumber && (
-                          <div className="text-danger">
-                            {errors.senderPhoneNumber}
-                          </div>
-                        )}
-                      </div>
-                      <div className="mb-2">
-                        <input
-                          type="email"
-                          className="form-control"
-                          placeholder="Email"
-                          name="senderEmail"
-                          value={ShipmentData.senderEmail}
-                          onChange={handleChange}
-                        />
-                        {errors.senderEmail && (
-                          <div className="text-danger">
-                            {errors.senderEmail}
-                          </div>
-                        )}
-                      </div>
-                      <h6>Address</h6>
-                      <div className="mb-2">
-                        <Select
-                          options={countryOptions}
-                          placeholder="Select Country/Territory"
-                          value={countryOptions.find(
-                            (option) =>
-                              option.value === ShipmentData.senderCountry
-                          )}
-                          onChange={handleSenderCountryChange}
-                        />
-                        {errors.senderCountry && (
-                          <div className="text-danger">
-                            {errors.senderCountry}
-                          </div>
-                        )}
-                      </div>
-                      <div className="mb-2">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Address Line 1 *"
-                          name="senderAddress"
-                          value={ShipmentData.senderAddress}
-                          onChange={handleChange}
-                        />
-                        {errors.senderAddress && (
-                          <div className="text-danger">
-                            {errors.senderAddress}
-                          </div>
-                        )}
-                      </div>
-                      <div className="mb-2">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Postal Code"
-                          name="senderPostalCode"
-                          value={ShipmentData.senderPostalCode}
-                          onChange={handleChange}
-                        />
-                        {errors.senderPostalCode && (
-                          <div className="text-danger">
-                            {errors.senderPostalCode}
-                          </div>
-                        )}
-                      </div>
-                      <div className="mb-2">
-                        <Select
-                          options={stateOptions}
-                          placeholder="Select State"
-                          value={stateOptions.find(
-                            (option) =>
-                              option.value ===
-                              ShipmentData.senderStateOrProvinceCode
-                          )}
-                          onChange={handleSenderStateChange}
-                        />
-                        {errors.senderStateOrProvinceCode && (
-                          <div className="text-danger">
-                            {errors.senderStateOrProvinceCode}
-                          </div>
-                        )}
-                      </div>
-                      <div className="mb-2">
-                        <Select
-                          options={cityOptions}
-                          placeholder="Select City *"
-                          value={cityOptions.find(
-                            (option) => option.value === ShipmentData.senderCity
-                          )}
-                          onChange={handleSenderCityChange}
-                        />
-                        {errors.senderCity && (
-                          <div className="text-danger">{errors.senderCity}</div>
-                        )}
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id="senderResidential"
-                          name="senderIsResidential"
-                          checked={ShipmentData.senderIsResidential}
-                          onChange={handleChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="residentialAddress"
-                        >
-                          This is a residential address
-                        </label>
-                      </div>
-                      <div className="form-check mb-3">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id="saveSender"
-                          name="senderIsSave"
-                          checked={ShipmentData.senderIsSave}
-                          onChange={handleChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="saveSender"
-                        >
-                          Save as new sender in
-                          <select className="form-select d-inline w-auto">
-                            <option selected>Personal Address Book</option>
-                          </select>
-                        </label>
-                      </div>
                     </div>
                   </>
                 )}
@@ -880,8 +910,8 @@ function Shipping() {
                       ShipmentData.recipientsCountry && (
                       <div className="mb-3">
                         <h5 className="mb-3 fw-bold text-primary">
-                          <i className="fa fa-check-circle"></i> International
-                          Shipment Details
+                          <i className="fa fa-check-circle"></i> What are you
+                          shipping?
                         </h5>
                         <div className="row g-3 mb-3">
                           <div className="col-md-4 col-sm-6">
@@ -1062,7 +1092,24 @@ function Shipping() {
                         </div>
                       )}
                     </div>
-
+                    <div className="mb-2">
+                      <label className="form-label fw-bold">Pickup *</label>
+                      <select
+                        onChange={handleSelectChange}
+                        name="pickupType"
+                        value={ShipmentData.pickupType}
+                        className="form-control"
+                      >
+                        {PickUpOption.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.pickupType && (
+                        <div className="text-danger">{errors.pickupType}</div>
+                      )}
+                    </div>
                     <div className="form-check mb-3">
                       <input
                         className="form-check-input"
@@ -1250,7 +1297,34 @@ function Shipping() {
                               ?.pieceResponses?.[0]?.deliveryDatestamp;
                           const totalCharge =
                             item?.data?.data?.transactionShipments?.[0]
-                              ?.pieceResponses?.[0]?.baseRateAmount;
+                              ?.pieceResponses?.[0]?.netRateAmount;
+
+                          const totalNetFedExCharge =
+                            item?.data?.data?.transactionShipments?.[0]
+                              ?.completedShipmentDetail?.shipmentRating
+                              ?.shipmentRateDetails?.[0].totalNetFedExCharge;
+
+                          const serviceTypeLabels = {
+                            INTERNATIONAL_FIRST: "International First",
+                            FEDEX_INTERNATIONAL_PRIORITY:
+                              "FedEx International Priority",
+                            FEDEX_INTERNATIONAL_PRIORITY_EXPRESS:
+                              "FedEx International Priority Express",
+                            INTERNATIONAL_ECONOMY: "International Economy",
+                            FEDEX_INTERNATIONAL_GROUND:
+                              "FedEx International Ground",
+                            FEDEX_GROUND: "FedEx Ground",
+                            FEDEX_2_DAY: "FedEx 2 Day",
+                            FEDEX_2_DAY_AM: "FedEx 2 Day AM",
+                            FEDEX_EXPRESS_SAVER: "FedEx Express Saver",
+                            STANDARD_OVERNIGHT: "Standard Overnight",
+                          };
+
+                          const serviceType =
+                            serviceTypeLabels[
+                              item?.data?.data?.ShipmentInfo?.serviceType
+                            ] || "Unknown Service";
+
                           return (
                             <div>
                               {item?.data?.data && (
@@ -1258,14 +1332,20 @@ function Shipping() {
                                   key={index}
                                   className="my-3 d-flex justify-content-between border p-3"
                                 >
-                                  <div>
+                                  <div className="d-flex flex-column">
                                     {deliveryDatestamp &&
                                       format(
                                         new Date(deliveryDatestamp),
                                         "MMMM dd, yyyy hh:mm a"
                                       )}
+                                    <span>{serviceType}</span>
                                   </div>
-                                  <div>${totalCharge ?? "0.00"}</div>
+                                  <div>
+                                    $
+                                    {totalCharge
+                                      ? totalCharge
+                                      : totalNetFedExCharge}
+                                  </div>
                                 </div>
                               )}
                             </div>
