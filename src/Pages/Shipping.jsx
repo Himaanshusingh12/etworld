@@ -9,14 +9,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
-import { setShipmentData } from "../Redux/Slices/ShipmentSlice";
+import { resetState, setShipmentData } from "../Redux/Slices/ShipmentSlice";
 import { handleChange as handleChangeAction } from "../Redux/Slices/ShipmentSlice";
 import {
   addPackage as addPackageAction,
   deletePackage as deletePackageAction,
   calculateTotals,
 } from "../Redux/Slices/ShipmentSlice";
-import { addShipment } from "../Redux/Slices/ShipmentListSlice";
 
 function Shipping() {
   const countryOptions = Country.getAllCountries().map((c) => ({
@@ -206,8 +205,8 @@ function Shipping() {
   ];
 
   const paymentTypeOptions = [
-    { label: "Senders", value: "SENDERS" },
-    { label: "Receivers", value: "RECEIVERS" },
+    { label: "Sender", value: "SENDER" },
+    { label: "Receiver", value: "RECIPIENT" },
     { label: "Third Party", value: "THIRD_PARTY" },
     { label: "Collect", value: "COLLECT" },
   ];
@@ -444,9 +443,38 @@ function Shipping() {
     }
   };
 
-  const handleSave = () => {
-    dispatch(addShipment(ShipmentData));
+  const handleSave = async () => {
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/fedex/shipmentList/`,
+        ShipmentData
+      );
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  const handleResetForm = () => {
+    dispatch(resetState());
+  };
+
+  const PickUpOption = [
+    {
+      value: "DROPOFF_AT_FEDEX_LOCATION",
+      label: "Drop off at FedEx location",
+    },
+    {
+      value: "CONTACT_FEDEX_TO_SCHEDULE",
+      label: "Contact FedEx to schedule pickup",
+    },
+    {
+      value: "USE_SCHEDULED_PICKUP",
+      label: "Use scheduled pickup",
+    },
+  ];
+  
+  console.log(ShipmentData);
 
   return (
     <>
@@ -455,7 +483,6 @@ function Shipping() {
         <div className="flex-shrink-0">
           <LogisticSidepanel />
         </div>
-        {/* from here main content start */}
         <div>
           <header className="bg-light py-2 border-bottom">
             <div className="container d-flex justify-content-between align-items-center">
@@ -467,14 +494,19 @@ function Shipping() {
                 </select>
               </div>
               <div>
-                <span onClick={handleSave} className="text-primary me-3">
+                <button onClick={handleSave} className="btn text-primary me-3">
                   SAVE
-                </span>
-                <span className="text-primary me-3">RESET FORM</span>
-                <span className="text-primary me-3">
+                </button>
+                <button
+                  onClick={handleResetForm}
+                  className="btn text-primary me-3"
+                >
+                  RESET FORM
+                </button>
+                <button className="btn text-primary me-3">
                   SAVE AS SHIPMENT PROFILE
-                </span>
-                <span className="text-primary">VIEWS</span>
+                </button>
+                <button className="btn text-primary">VIEWS</button>
               </div>
             </div>
           </header>
@@ -516,10 +548,11 @@ function Shipping() {
                           country={ShipmentData.senderCountry?.toLowerCase()}
                           value={ShipmentData.senderPhoneNumber}
                           onChange={(value) =>
-                            setShipmentData((prev) => ({
-                              ...prev,
-                              senderPhoneNumber: value,
-                            }))
+                            dispatch(
+                              setShipmentData({
+                                senderPhoneNumber: value,
+                              })
+                            )
                           }
                           inputClass="form-control"
                           name="senderPhoneNumber"
@@ -692,10 +725,11 @@ function Shipping() {
                           country={ShipmentData.recipientsCountry?.toLowerCase()}
                           value={ShipmentData.recipientsPhoneNumber}
                           onChange={(value) =>
-                            setShipmentData((prev) => ({
-                              ...prev,
-                              recipientsPhoneNumber: value,
-                            }))
+                            dispatch(
+                              setShipmentData({
+                                recipientsPhoneNumber: value,
+                              })
+                            )
                           }
                           inputClass="form-control"
                         />
@@ -1037,21 +1071,16 @@ function Shipping() {
                         value={ShipmentData.pickupType}
                         className="form-control"
                       >
-                        <option selected value="DROPOFF_AT_FEDEX_LOCATION">
-                          Drop off at FedEx location
-                        </option>
-                        <option value="CONTACT_FEDEX_TO_SCHEDULE">
-                          Contact FedEx to schedule pickup
-                        </option>
-                        <option value="USE_SCHEDULED_PICKUP">
-                          Use scheduled pickup
-                        </option>
+                        {PickUpOption.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
                       </select>
                       {errors.pickupType && (
                         <div className="text-danger">{errors.pickupType}</div>
                       )}
                     </div>
-
                     <div className="form-check mb-3">
                       <input
                         className="form-check-input"
@@ -1239,7 +1268,7 @@ function Shipping() {
                               ?.pieceResponses?.[0]?.deliveryDatestamp;
                           const totalCharge =
                             item?.data?.data?.transactionShipments?.[0]
-                              ?.pieceResponses?.[0]?.baseRateAmount;
+                              ?.pieceResponses?.[0]?.netRateAmount;
                           return (
                             <div>
                               {item?.data?.data && (

@@ -4,29 +4,29 @@ const user = JSON.parse(localStorage.getItem("user"));
 
 const initialState = {
   userId: user?.userid,
-  recipientsPersonName: "Olivia Brown",
-  recipientsPhoneNumber: "7897987899",
-  recipientsEmail: "meet@gmail.com",
-  recipientsCountry: "US",
-  recipientsAddress: "456 Cedar Lane",
-  recipientsPostalCode: "77002",
-  recipientsStateOrProvinceCode: "TX",
-  recipientsCity: "Houston",
-  recipientsIsResidential: false,
-  recipientsIsSave: false,
-  senderPersonName: "Meet",
-  senderPhoneNumber: "7897986545",
-  senderEmail: "meet@gmail.com",
-  senderCountry: "US",
-  senderAddress: "123 Maple Road",
-  senderPostalCode: "02108",
-  senderStateOrProvinceCode: "MA",
-  senderCity: "Boston",
+  senderPersonName: "",
+  senderPhoneNumber: "",
+  senderEmail: "",
+  senderCountry: "",
+  senderAddress: "",
+  senderPostalCode: "",
+  senderStateOrProvinceCode: "",
+  senderCity: "",
   senderIsResidential: false,
   senderIsSave: false,
+  recipientsPersonName: "",
+  recipientsPhoneNumber: "",
+  recipientsEmail: "",
+  recipientsCountry: "",
+  recipientsAddress: "",
+  recipientsPostalCode: "",
+  recipientsStateOrProvinceCode: "",
+  recipientsCity: "",
+  recipientsIsResidential: false,
+  recipientsIsSave: false,
   paymentType: "SENDER",
-  serviceType: "FEDEX_2_DAY",
-  packagingType: "FEDEX_BOX",
+  serviceType: "FEDEX_GROUND",
+  packagingType: "YOUR_PACKAGING",
   pickupType: "DROPOFF_AT_FEDEX_LOCATION",
   totalAmount: "",
   totalCurrency: "USD",
@@ -39,16 +39,16 @@ const initialState = {
   shipmentPurpose: "",
   dutiesPaymentType: "",
   termsOfSale: "",
-  totalWeight: "80",
-  totalPackages: "8",
+  totalWeight: "",
+  totalPackages: "",
   packages: [
     {
-      packagesNo: "8",
-      weight: "10",
-      weightUnit: "LB",
-      length: "10",
-      width: "8",
-      height: "6",
+      packagesNo: "1",
+      weight: "",
+      weightUnit: "KG",
+      length: "",
+      width: "",
+      height: "",
       units: "IN",
     },
   ],
@@ -59,7 +59,7 @@ const shippingSlice = createSlice({
   initialState,
   reducers: {
     setShipmentData: (state, action) => {
-      state.ShipmentData = { ...state.ShipmentData, ...action.payload };
+      return { ...state, ...action.payload };
     },
     calculateTotals: (state) => {
       const totalWeight = state.packages.reduce((sum, pkg) => {
@@ -177,6 +177,12 @@ const shippingSlice = createSlice({
         state[name] = value;
       }
     },
+    resetState: () => {
+      return {
+        ...initialState,
+        userId: user?.userid,
+      };
+    },
   },
 });
 
@@ -186,6 +192,7 @@ export const {
   addPackage,
   deletePackage,
   handleChange,
+  resetState,
 } = shippingSlice.actions;
 
 export default shippingSlice.reducer;
