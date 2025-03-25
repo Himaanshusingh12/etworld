@@ -35,7 +35,7 @@ function Shipping() {
   const ShipmentData = useSelector((state) => state.Shipping);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const stateOptions = selectedCountry?.value
     ? State.getStatesOfCountry(selectedCountry.value).map((s) => ({
@@ -484,11 +484,12 @@ function Shipping() {
 
   const token = async () => {
     try {
+      console.log(user.userid);
       if (!user.userid) {
         console.log("User id not found please login");
+        navigate("/");
         return;
       }
-      navigate("/");
       const res = await getToken({
         data: user?.userid,
       });
@@ -502,7 +503,10 @@ function Shipping() {
   };
 
   useEffect(() => {
-    if (!localStorage.getItem("fedex_token")) token();
+    if (!localStorage.getItem("fedex_token")) {
+      console.log("run");
+      token();
+    }
   }, []);
 
   return (
