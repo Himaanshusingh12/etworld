@@ -173,7 +173,7 @@ const ServicesAndPackagingOptions = () => {
                   <button
                     type="button"
                     onClick={handleShowdetail}
-                    className="btn btn-primary"
+                    className="btn btn-primary w-100"
                     disabled={loading}
                   >
                     {loading ? "Loading..." : "Show Rate"}

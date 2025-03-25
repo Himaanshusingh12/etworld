@@ -38,7 +38,7 @@ export const CreateShipment = async (data) => {
 };
 
 export const DeleteShipment = async (data) => {
-  return axiosInstance.delete("/api/fedex/shipmentList/delete/", data);
+  return axiosInstance.delete("/api/fedex/shipmentList/delete/", { data });
 };
 export const EditShipment = async (data) => {
   return axiosInstance.put("/api/fedex/shipmentList/edit/", data);

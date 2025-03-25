@@ -54,8 +54,6 @@ const GlobalTradeDocuments = () => {
     }
   };
 
-  console.log(result)
-
   return (
     <>
       <LogisticHeader />

@@ -484,9 +484,7 @@ function Shipping() {
 
   const token = async () => {
     try {
-      console.log(user.userid);
       if (!user.userid) {
-        console.log("User id not found please login");
         navigate("/");
         return;
       }
@@ -504,11 +502,10 @@ function Shipping() {
 
   useEffect(() => {
     if (!localStorage.getItem("fedex_token")) {
-      console.log("run");
       token();
     }
   }, []);
-
+  
   return (
     <>
       <LogisticHeader />
