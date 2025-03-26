@@ -68,11 +68,59 @@ const ShipmentList = () => {
   const handleEdit = () => {
     if (selected.length > 0) {
       const shipment = list.find((item) => item._id === selected[0]);
-      if (shipment && shipment.ShipmentInfo) {
+      if (shipment) {
         const mappedData = {
+          senderPersonName: shipment.ShipmentInfo.senderPersonName,
+          senderPhoneNumber: shipment.ShipmentInfo.senderPhoneNumber,
+          senderEmail: shipment.ShipmentInfo.senderEmail,
+          senderCountry: shipment.ShipmentInfo.senderCountryCode,
+          senderAddress: shipment.ShipmentInfo.senderAddress,
+          senderPostalCode: shipment.ShipmentInfo.senderPostalCode,
+          senderStateOrProvinceCode:
+            shipment.ShipmentInfo.senderStateOrProvinceCode,
+          senderCity: shipment.ShipmentInfo.senderCity,
+          senderIsResidential:
+            shipment.ShipmentInfo.senderIsResidential,
+          senderIsSave: shipment.ShipmentInfo.senderIsSave,
           recipientsPersonName: shipment.ShipmentInfo.recipientPersonName,
-          recipientsPhoneNumber: shipment.ShipmentInfo.recipientPhoneNumber,
-          packages: shipment.ShipmentInfo.packages,
+          recipientsPhoneNumber:
+            shipment.ShipmentInfo.recipientPhoneNumber,
+          recipientsEmail: shipment.ShipmentInfo.recipientEmail,
+          recipientsCountry: shipment.ShipmentInfo.recipientCountryCode,
+          recipientsAddress: shipment.ShipmentInfo.recipientAddress,
+          recipientsPostalCode: shipment.ShipmentInfo.recipientPostalCode,
+          recipientsStateOrProvinceCode:
+            shipment.ShipmentInfo.recipientStateOrProvinceCode,
+          recipientsCity: shipment.ShipmentInfo.recipientCity,
+          recipientsIsResidential:
+            shipment.ShipmentInfo.recipientIsResidential,
+          recipientsIsSave: shipment.ShipmentInfo.recipientIsSave,
+          paymentType: shipment.ShipmentInfo.paymentType,
+          serviceType: shipment.ShipmentInfo.serviceType,
+          packagingType: shipment.ShipmentInfo.packagingType,
+          pickupType: shipment.ShipmentInfo.pickupType,
+          totalAmount: shipment.ShipmentInfo.totalAmount,
+          totalCurrency: shipment.ShipmentInfo.totalCurrency,
+          unitPriceAmount: shipment.ShipmentInfo.unitPriceAmount,
+          unitPriceCurrency: shipment.ShipmentInfo.unitPriceCurrency,
+          commodityDescription: shipment.ShipmentInfo.commodityDescription,
+          commodityQuantity: shipment.ShipmentInfo.commodityQuantity,
+          commodityQuantityUnits: shipment.ShipmentInfo.commodityQuantityUnits,
+          commodityCountryOfManufacture: shipment.ShipmentInfo.commodityCountryOfManufacture,
+          shipmentPurpose: shipment.ShipmentInfo.shipmentPurpose,
+          dutiesPaymentType: shipment.ShipmentInfo.dutiesPaymentType,
+          termsOfSale: shipment.ShipmentInfo.termsOfSale,
+          totalWeight: shipment.ShipmentInfo.totalWeight,
+          totalPackages: shipment.ShipmentInfo.totalPackages,
+          packages: shipment.ShipmentInfo.packages.map((item) => ({
+            packagesNo: item.packagesNo,
+            weight: item.weight,
+            weightUnit: item.weightUnit,
+            length: item.dimensions?.length,
+            width: item.dimensions?.width,
+            height: item.dimensions?.height,
+            units: item.dimensions?.units,
+          })),
         };
         dispatch(setIsEdit([true, shipment._id]));
         dispatch(setShipmentData(mappedData));
@@ -85,7 +133,6 @@ const ShipmentList = () => {
 
   const handleDelete = async () => {
     if (selected.length === 0) return;
-
     try {
       const shipmentIdsString = selected.join(", ");
       const res = await DeleteShipment({ id: shipmentIdsString });

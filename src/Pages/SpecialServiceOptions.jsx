@@ -214,7 +214,7 @@ const SpecialServiceOptions = () => {
                 <div className="d-flex gap-3 my-2">
                   <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn btn-primary w-100"
                     onClick={handleShowRates}
                     disabled={loading}
                   >
